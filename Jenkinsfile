@@ -21,6 +21,7 @@ pipeline {
                 dir('configuration') {
                     sshagent(credentials: ['ssh_key']) {
                         script {
+                            sh 'echo ${env.IMAGE_VERSION}'
                             sh 'ssh-keyscan -H 44.214.134.6 >> ~/.ssh/known_hosts'
                             sh 'ansible all -i 44.214.134.6, -m ping -e "ansible_user=ec2-user" -e "ANSIBLE_HOST_KEY_CHECKING=False"'
                             // Use Ansible to build image and deploy to development EC2 instance
