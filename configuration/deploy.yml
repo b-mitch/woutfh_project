@@ -1,5 +1,6 @@
 ---
-- hosts: "{{ target }}"
+# - hosts: "{{ target }}"
+- hosts: instances
   become: false #runs all commands as ec2-user
   
   tasks:
