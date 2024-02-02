@@ -63,7 +63,7 @@ pipeline {
                                 string(credentialsId: 'DB_HOST-prod', variable: 'DB_HOST'),
                                 string(credentialsId: 'EMAIL_PASSWORD', variable: 'EMAIL_PASSWORD')
                             ]) {
-                                sh 'ansible-playbook -i 3.83.41.226, -u ec2-user deploy.yml -e "target=3.83.41.226" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_project/app" -e "SECRET_KEY=SECRET_KEY" -e "DB_NAME=DB_NAME" -e "DB_USER=DB_USER" -e "DB_PASS=DB_PASS" -e "DB_HOST=DB_HOST" -e "EMAIL_PASSWORD=EMAIL_PASSWORD"'
+                                sh 'ansible-playbook -i 3.83.41.226, -u ec2-user deploy.yml -e "target=3.83.41.226" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_project/app" -e "SECRET_KEY=$SECRET_KEY" -e "DB_NAME=$DB_NAME" -e "DB_USER=$DB_USER" -e "DB_PASS=$DB_PASS" -e "DB_HOST=$DB_HOST" -e "EMAIL_PASSWORD=$EMAIL_PASSWORD"'
                             }
                         }
                     }
@@ -102,7 +102,7 @@ pipeline {
                                 string(credentialsId: 'DB_HOST-prod', variable: 'DB_HOST'),
                                 string(credentialsId: 'EMAIL_PASSWORD', variable: 'EMAIL_PASSWORD')
                             ]) {
-                                sh 'ansible-playbook -i 44.222.76.124, -u ec2-user deploy.yml -e "target=44.222.76.124" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_project/app" -e "SECRET_KEY=SECRET_KEY" -e "DB_NAME=DB_NAME" -e "DB_USER=DB_USER" -e "DB_PASS=DB_PASS" -e "DB_HOST=DB_HOST" -e "EMAIL_PASSWORD=EMAIL_PASSWORD"'
+                                sh 'ansible-playbook -i 44.222.76.124, -u ec2-user deploy.yml -e "target=44.222.76.124" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_project/app" -e "SECRET_KEY=$SECRET_KEY" -e "DB_NAME=$DB_NAME" -e "DB_USER=$DB_USER" -e "DB_PASS=$DB_PASS" -e "DB_HOST=$DB_HOST" -e "EMAIL_PASSWORD=$EMAIL_PASSWORD"'
                             }
                         }
                     }
