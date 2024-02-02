@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Build and Deploy to Development') {
             steps {
-                dir('../woutfh_configuration/') {
+                dir('configuration') {
                     script {
                         // Use Ansible to build image and deploy to development EC2 instance
                         sh "echo '${env.IMAGE_VERSION}'"
@@ -46,7 +46,7 @@ pipeline {
         }
         stage('Deploy to Green Production') {
             steps {
-                dir('../woutfh_configuration') {
+                dir('configuration') {
                     script {
                         // Use Ansible to deploy to green production instance
                         sh 'ansible-playbook -i hosts reset.yml -e "target=3.83.41.226" -e "version=${env.IMAGE_VERSION}"'
@@ -62,7 +62,7 @@ pipeline {
         }
         stage('Switch ALB to Green') {
             steps {
-                dir('../alb_config') {
+                dir('alb_config') {
                     script {
                         // Use Terraform to switch ALB target group weights
                         sh 'terraform apply -var="blue_weight=0" -var="green_weight=100" -auto-approve'
@@ -72,7 +72,7 @@ pipeline {
         }
         stage('Deploy to Blue Production') {
             steps {
-                dir('../woutfh_configuration') {
+                dir('woutfh_configuration') {
                     script {
                         // Use Ansible to deploy to blue production instance
                         sh 'ansible-playbook -i hosts reset.yml -e "target=44.222.76.124" -e "version=${env.IMAGE_VERSION}"'
@@ -88,7 +88,7 @@ pipeline {
         }
         stage('Switch ALB to Blue') {
             steps {
-                dir('../alb_config') {
+                dir('alb_config') {
                     script {
                         // Use Terraform to switch ALB target group weights back to blue
                         sh 'terraform apply -var="blue_weight=100" -var="green_weight=0" -auto-approve'
