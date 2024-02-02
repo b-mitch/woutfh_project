@@ -30,9 +30,10 @@
 
   - name: Prune all docker resources
     community.docker.docker_prune:
-      all: true
-      volumes: true
-      networks: true
-      images: true
       containers: true
-      force: true
+      images: true
+      images_filters:
+        dangling: false
+      networks: true
+      volumes: true
+      builder_cache: true
