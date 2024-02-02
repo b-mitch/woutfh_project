@@ -1,10 +1,10 @@
 import React from "react";
 
 export default function Test() {
-  console.log('Test component');
+  console.log('Version 1.0.10');
   return (
     <div>
-      <h1>Version 1.0.9</h1>
+      <p>Version 1.0.10</p>
     </div>
   );
 }
