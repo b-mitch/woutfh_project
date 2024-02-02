@@ -16,21 +16,21 @@ function App() {
 
   return (
     <div className="App">
-        <NavBar />
+      <NavBar />
 
-        <Routes>
-          <Route path="/" element={<Home />}/>
-          <Route path="*" element={<NotFound />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/contact" element={<ContactUs />} />
-          <Route path="/test" element={<Test />} />
-          <Route element={<ProtectedRoutes />}>
-            <Route path="/availability/*" element={<CalendarContainer />} />
-            <Route path="/videos" element={<Videos />} />
-          </Route>
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<Home />}/>
+        <Route path="*" element={<NotFound />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/test" element={<Test />} />
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/availability/*" element={<CalendarContainer />} />
+          <Route path="/videos" element={<Videos />} />
+        </Route>
+      </Routes>
+    </div>
   );
 }
 
