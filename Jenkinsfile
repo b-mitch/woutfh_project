@@ -19,15 +19,15 @@ pipeline {
         stage('Build and Deploy to Development') {
             steps {
                 dir('configuration') {
-                    sshagent(credentials: ['ssh_key']) {
-                        withCredentials([
+                    withCredentials([
                                 password(credentialsId: 'SECRET_KEY', variable: 'SECRET_KEY'),
                                 password(credentialsId: 'DB_NAME', variable: 'DB_NAME'),
                                 password(credentialsId: 'DB_USER', variable: 'DB_USER'),
                                 password(credentialsId: 'DB_PASS', variable: 'DB_PASS'),
                                 password(credentialsId: 'DB_HOST', variable: 'DB_HOST'),
                                 password(credentialsId: 'EMAIL_PASSWORD', variable: 'EMAIL_PASSWORD')
-                        ]) {
+                    ]) {
+                        sshagent(credentials: ['ssh_key']) {
                             script {
                                 sh 'ssh-keyscan -H 44.214.134.6 >> ~/.ssh/known_hosts'
                                 sh 'ansible all -i 44.214.134.6, -m ping -e "ansible_user=ec2-user" -e "ANSIBLE_HOST_KEY_CHECKING=False"'
