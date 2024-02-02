@@ -1,0 +1,11 @@
+---
+- name: Main Playbook
+  hosts: instances
+
+  tasks:
+
+- name: Include setup_docker.yml
+  import_playbook: setup_docker.yml
+
+- name: Include setup_app.yml
+  import_playbook: setup_app.yml

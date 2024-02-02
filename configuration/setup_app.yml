@@ -1,0 +1,90 @@
+---
+- hosts: instances
+  become: false #runs all commands as ec2-user
+  
+  tasks:
+
+  - name: Fetch Public IP
+    command: "curl -s ifconfig.me"
+    register: public_ip_result
+
+  - name: Set Fact for EC2 Public IP
+    set_fact:
+      instance_public_ip: "{{ public_ip_result.stdout }}"
+
+  # - name: Print Instance IP
+  #   debug:
+  #     msg: "Instance IP: {{ instance_public_ip }}"
+
+  # - name: Print Instance OS name
+  #   debug:
+  #     msg: "Instance OS: {{ ansible_os_family | lower }}"
+
+  # - name: Print Instance Architecture
+  #   debug:
+  #     msg: "Instance Architecture: {{ ansible_architecture }}"
+
+  - name: Log into DockerHub
+    community.docker.docker_login:
+      username: "{{ docker_hub_credentials.username }}"
+      password: "{{ docker_hub_credentials.password }}"
+
+  - name: Configure Git user name
+    command: >
+      git config --global user.name "{{ git_config.user_name }}"
+  
+  - name: Configure Git user email
+    command: >
+      git config --global user.email "{{ git_config.user_email }}"
+
+  - name: Copy SSH key to the instance
+    command: >
+      scp -o StrictHostKeyChecking=no -i /home/brendenmitchum/.ssh/id_rsa /home/brendenmitchum/.ssh/id_rsa {{ ansible_user }}@{{ instance_public_ip }}:~/.ssh/
+    delegate_to: localhost
+
+  - name: Set permissions for SSH key
+    command: chmod 600 ~/.ssh/id_rsa
+
+  - name: Clone GitHub repository
+    git:
+      repo: "{{ github_repo_url }}"
+      dest: "/home/ec2-user/woutfh_prod"
+      accept_hostkey: yes
+      update: yes
+      clone: yes
+      force: yes
+      key_file: ~/.ssh/id_rsa
+
+  - name: Create .env file and add API key
+    block:
+      - name: Ensure .env file exists
+        file:
+          path: "{{ app_root_directory }}/.env"
+          state: touch
+
+      - name: Add API key to .env file
+        lineinfile:
+          path: "{{ app_root_directory }}/.env"
+          line: "REACT_APP_YOUTUBE_API_KEY={{ youtube_api_key }}"
+
+  - name: Grant execute permissions to build-and-push-images.sh
+    command: chmod +x build-and-push-images.sh
+    args:
+      chdir: "{{ app_root_directory }}"
+
+  - name: Run build-and-push-images.sh script
+    command: >
+      ./build-and-push-images.sh {{ instance_public_ip }} {{ version }}
+    args:
+      chdir: "{{ app_root_directory }}"
+
+  - name: Grant execute permissions to run-compose-prod.sh
+    command: chmod +x run-compose-prod.sh
+    args:
+      chdir: "{{ app_root_directory }}"
+
+  - name: Run run-compose-prod.sh script
+    command: >
+      ./run-compose-prod.sh {{ SECRET_KEY }} {{ DB_NAME }} {{ DB_USER }} {{ DB_PASS }} {{ DB_HOST }} {{ EMAIL_PASSWORD }} {{ version }}
+    args:
+      chdir: "{{ app_root_directory }}"

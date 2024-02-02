@@ -1,0 +1,30 @@
+---
+- hosts: instances
+  become: true #runs all commands as root user with 'sudo'
+  
+  tasks:
+
+  - name: Update the system
+    yum:
+      name: "*"
+      state: latest
+
+  - name: Install PostgreSQL and Git
+    dnf:
+      name: "{{ item }}"
+      state: present
+    loop:
+      - postgresql15.x86_64
+      - postgresql15-server
+      - git
+
+  - name: Install Docker Compose
+    command: >
+      curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-{{ ansible_architecture }}" -o /usr/local/bin/docker-compose
+    args:
+      creates: /usr/local/bin/docker-compose
+
+  - name: Apply executable permissions to Docker Compose
+    file:
+      path: /usr/local/bin/docker-compose
+      mode: '+x'

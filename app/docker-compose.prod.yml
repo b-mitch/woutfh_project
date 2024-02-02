@@ -1,0 +1,24 @@
+#########################################
+# The "production" compose file builds 
+# on your EC2 instance
+#########################################
+
+version: "3"
+services:
+  api:
+    image: $DOCKERHUB_UNAME/woutfh_api-prod:$NEW_VERSION 
+    environment:
+      - SECRET_KEY=$SECRET_KEY
+      - DB_NAME=$DB_NAME
+      - DB_USER=$DB_USER
+      - DB_PASS=$DB_PASS
+      - DB_HOST=$DB_HOST
+      - EMAIL_PASSWORD=$EMAIL_PASSWORD
+
+  nginx:
+    image: $DOCKERHUB_UNAME/woutfh_webserver-prod:$NEW_VERSION
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      - REACT_APP_YOUTUBE_API_KEY=$REACT_APP_YOUTUBE_API_KEY

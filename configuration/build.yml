@@ -1,0 +1,34 @@
+---
+- hosts: "{{ target }}"
+  become: false #runs all commands as ec2-user
+  
+  tasks:
+
+  - name: Fetch Public IP
+    command: "curl -s ifconfig.me"
+    register: public_ip_result
+
+  - name: Set Fact for EC2 Public IP
+    set_fact:
+      instance_public_ip: "{{ public_ip_result.stdout }}"
+
+  - name: Stash git changes
+    command: git stash
+    args:
+      chdir: "{{ app_root_directory }}"
+
+  - name: Pull latest changes from GitHub
+    command: git pull
+    args:
+      chdir: "{{ app_root_directory }}"
+
+  - name: Grant execute permissions to build-and-push-images.sh
+    command: chmod +x build-and-push-images.sh
+    args:
+      chdir: "{{ app_root_directory }}"
+
+  - name: Run build-and-push-images.sh script
+    command: >
+      ./build-and-push-images.sh {{ instance_public_ip }} {{ version | default('latest') }}
+    args:
+      chdir: "{{ app_root_directory }}"

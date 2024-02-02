@@ -1,0 +1,24 @@
+---
+- hosts: "{{ target }}"
+  become: false #runs all commands as ec2-user
+  
+  tasks:
+
+  - name: Fetch Public IP
+    command: "curl -s ifconfig.me"
+    register: public_ip_result
+
+  - name: Set Fact for EC2 Public IP
+    set_fact:
+      instance_public_ip: "{{ public_ip_result.stdout }}"
+
+  - name: Grant execute permissions to run-compose-prod.sh
+    command: chmod +x run-compose-prod.sh
+    args:
+      chdir: "{{ app_root_directory }}"
+
+  - name: Run run-compose-prod.sh script
+    command: >
+      ./run-compose-prod.sh {{ SECRET_KEY }} {{ DB_NAME }} {{ DB_USER }} {{ DB_PASS }} {{ DB_HOST }} {{ EMAIL_PASSWORD }} {{ version | default('latest') }}
+    args:
+      chdir: "{{ app_root_directory }}"
