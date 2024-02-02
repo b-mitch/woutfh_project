@@ -56,12 +56,12 @@ pipeline {
                             // Use Ansible to deploy to green production instance
                             sh 'ansible-playbook -i 3.83.41.226, -u ec2-user reset.yml -e "target=3.83.41.226" -e "version=${IMAGE_VERSION}"'
                             withCredentials([
-                                password(credentialsId: 'SECRET_KEY', variable: 'SECRET_KEY'),
-                                password(credentialsId: 'DB_NAME-prod', variable: 'DB_NAME'),
-                                password(credentialsId: 'DB_USER-prod', variable: 'DB_USER'),
-                                password(credentialsId: 'DB_PASS-prod', variable: 'DB_PASS'),
-                                password(credentialsId: 'DB_HOST-prod', variable: 'DB_HOST'),
-                                password(credentialsId: 'EMAIL_PASSWORD', variable: 'EMAIL_PASSWORD')
+                                string(credentialsId: 'SECRET_KEY', variable: 'SECRET_KEY'),
+                                string(credentialsId: 'DB_NAME-prod', variable: 'DB_NAME'),
+                                string(credentialsId: 'DB_USER-prod', variable: 'DB_USER'),
+                                string(credentialsId: 'DB_PASS-prod', variable: 'DB_PASS'),
+                                string(credentialsId: 'DB_HOST-prod', variable: 'DB_HOST'),
+                                string(credentialsId: 'EMAIL_PASSWORD', variable: 'EMAIL_PASSWORD')
                             ]) {
                                 sh 'ansible-playbook -i 3.83.41.226, -u ec2-user deploy.yml -e "target=3.83.41.226" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_project/app" -e "SECRET_KEY=SECRET_KEY" -e "DB_NAME=DB_NAME" -e "DB_USER=DB_USER" -e "DB_PASS=DB_PASS" -e "DB_HOST=DB_HOST" -e "EMAIL_PASSWORD=EMAIL_PASSWORD"'
                             }
@@ -95,12 +95,12 @@ pipeline {
                             // Use Ansible to deploy to blue production instance
                             sh 'ansible-playbook -i 44.222.76.124, -u ec2-user reset.yml -e "target=44.222.76.124" -e "version=${IMAGE_VERSION}"'
                             withCredentials([
-                                password(credentialsId: 'SECRET_KEY', variable: 'SECRET_KEY'),
-                                password(credentialsId: 'DB_NAME-prod', variable: 'DB_NAME'),
-                                password(credentialsId: 'DB_USER-prod', variable: 'DB_USER'),
-                                password(credentialsId: 'DB_PASS-prod', variable: 'DB_PASS'),
-                                password(credentialsId: 'DB_HOST-prod', variable: 'DB_HOST'),
-                                password(credentialsId: 'EMAIL_PASSWORD', variable: 'EMAIL_PASSWORD')
+                                string(credentialsId: 'SECRET_KEY', variable: 'SECRET_KEY'),
+                                string(credentialsId: 'DB_NAME-prod', variable: 'DB_NAME'),
+                                string(credentialsId: 'DB_USER-prod', variable: 'DB_USER'),
+                                string(credentialsId: 'DB_PASS-prod', variable: 'DB_PASS'),
+                                string(credentialsId: 'DB_HOST-prod', variable: 'DB_HOST'),
+                                string(credentialsId: 'EMAIL_PASSWORD', variable: 'EMAIL_PASSWORD')
                             ]) {
                                 sh 'ansible-playbook -i 44.222.76.124, -u ec2-user deploy.yml -e "target=44.222.76.124" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_project/app" -e "SECRET_KEY=SECRET_KEY" -e "DB_NAME=DB_NAME" -e "DB_USER=DB_USER" -e "DB_PASS=DB_PASS" -e "DB_HOST=DB_HOST" -e "EMAIL_PASSWORD=EMAIL_PASSWORD"'
                             }
