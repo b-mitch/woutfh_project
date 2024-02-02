@@ -24,8 +24,8 @@ pipeline {
                             sh 'ssh-keyscan -H 44.214.134.6 >> ~/.ssh/known_hosts'
                             sh 'ansible all -i 44.214.134.6, -m ping -e "ansible_user=ec2-user" -e "ANSIBLE_HOST_KEY_CHECKING=False"'
                             // Use Ansible to build image and deploy to development EC2 instance
-                            sh 'ansible-playbook -i 44.214.134.6, reset.yml -e "target=44.214.134.6"'
-                            sh 'ansible-playbook -i 44.214.134.6, build.yml -e "target=44.214.134.6" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_prod"'
+                            sh 'ansible-playbook -i 44.214.134.6, -u ec2-user reset.yml -e "target=44.214.134.6"'
+                            sh 'ansible-playbook -i 44.214.134.6, -u ec2-user build.yml -e "target=44.214.134.6" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_prod"'
                             withCredentials([
                                 string(credentialsId: 'SECRET_KEY', variable: 'SECRET_KEY'),
                                 string(credentialsId: 'DB_NAME', variable: 'DB_NAME'),
