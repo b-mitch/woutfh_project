@@ -10,6 +10,7 @@ import Login from './components/Login';
 import ProtectedRoutes from './components/ProtectedRoutes';
 import NotFound from './components/NotFound';
 import ContactUs from './components/ContactUs';
+import Test from './components/Test';
 
 function App() {
 
