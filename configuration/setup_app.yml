@@ -48,7 +48,7 @@
   - name: Clone GitHub repository
     git:
       repo: "{{ github_repo_url }}"
-      dest: "/home/ec2-user/woutfh_prod"
+      dest: "/home/ec2-user/woutfh_project"
       accept_hostkey: yes
       update: yes
       clone: yes
@@ -67,16 +67,16 @@
           path: "{{ app_root_directory }}/.env"
           line: "REACT_APP_YOUTUBE_API_KEY={{ youtube_api_key }}"
 
-  - name: Grant execute permissions to build-and-push-images.sh
-    command: chmod +x build-and-push-images.sh
-    args:
-      chdir: "{{ app_root_directory }}"
+  # - name: Grant execute permissions to build-and-push-images.sh
+  #   command: chmod +x build-and-push-images.sh
+  #   args:
+  #     chdir: "{{ app_root_directory }}"
 
-  - name: Run build-and-push-images.sh script
-    command: >
-      ./build-and-push-images.sh {{ instance_public_ip }} {{ version }}
-    args:
-      chdir: "{{ app_root_directory }}"
+  # - name: Run build-and-push-images.sh script
+  #   command: >
+  #     ./build-and-push-images.sh {{ instance_public_ip }} {{ version }}
+  #   args:
+  #     chdir: "{{ app_root_directory }}"
 
   - name: Grant execute permissions to run-compose-prod.sh
     command: chmod +x run-compose-prod.sh

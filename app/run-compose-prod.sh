@@ -18,5 +18,5 @@ docker-compose -f docker-compose.prod.yml up -d
 
 # make sure the postgres container is ready, then run migrations
 sleep 10 
-docker exec woutfh_prod-api-1 python /src/manage.py makemigrations 
-docker exec woutfh_prod-api-1 python /src/manage.py migrate
+docker exec app-api-1 python /src/manage.py makemigrations 
+docker exec app-api-1 python /src/manage.py migrate
