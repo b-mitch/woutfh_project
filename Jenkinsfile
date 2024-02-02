@@ -23,7 +23,7 @@ pipeline {
                         script {
                             sh '[ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh'
                             sh 'ssh-keyscan -t rsa,dsa 44.214.134.6 >> ~/.ssh/known_hosts'
-                            sh 'ssh ec2-user@44.214.134.6 ...'
+                            sh 'ssh -t ec2-user@44.214.134.6'
                             // Use Ansible to build image and deploy to development EC2 instance
                             sh 'ansible-playbook -i hosts reset.yml -e "target=44.214.134.6"'
                             sh 'ansible-playbook -i hosts build.yml -e "target=44.214.134.6" -e "version=${env.IMAGE_VERSION}"'
