@@ -19,7 +19,7 @@ pipeline {
         stage('Build and Deploy to Development') {
             steps {
                 dir('configuration') {
-                    sshagent(['ssh_key']) {
+                    sshagent(credentials: ['ssh_key']) {
                         script {
                             // Use Ansible to build image and deploy to development EC2 instance
                             sh 'ansible-playbook -i hosts reset.yml -e "target=44.214.134.6"'
