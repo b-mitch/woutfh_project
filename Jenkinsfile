@@ -75,19 +75,21 @@ pipeline {
         //         input 'Switch ALB to Green?'
         //     }
         // }
-        stage('Print Environment Variables') {
-            steps {
-                sh 'printenv'
-            }
-        }
         stage('Switch ALB to Green') {
             steps {
                 dir('elb') {
-                    script {
-                        // Initialize Terraform
-                        sh 'terraform init'
-                        // Use Terraform to switch ALB target group weights
-                        sh 'terraform apply -var="blue_weight=0" -var="green_weight=100" -auto-approve'
+                    withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    accessKeyVariable: 'AWS_ACCESS_KEY',
+                    credentialsId: 'your-aws-credential-id',
+                    secretKeyVariable: 'AWS_SECRET_KEY'
+                ]]) {
+                        script {
+                            // Initialize Terraform
+                            sh 'terraform init -var="aws_access_key=$AWS_ACCESS_KEY" -var="aws_secret_key=$AWS_SECRET_KEY"' 
+                            // Use Terraform to switch ALB target group weights
+                            sh 'terraform apply -var="blue_weight=0" -var="green_weight=100" -auto-approve'
+                        }
                     }
                 }
             }
