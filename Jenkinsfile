@@ -75,7 +75,55 @@ pipeline {
         //         input 'Switch ALB to Green?'
         //     }
         // }
-        stage('Switch ALB to Green') {
+        // stage('Switch ALB to Green') {
+        //     steps {
+        //         dir('elb') {
+        //             withCredentials([[
+        //             $class: 'AmazonWebServicesCredentialsBinding',
+        //             accessKeyVariable: 'AWS_ACCESS_KEY',
+        //             credentialsId: 'aws_credentials',
+        //             secretKeyVariable: 'AWS_SECRET_KEY'
+        //         ]]) {
+        //                 script {
+        //                     // Initialize Terraform
+        //                     sh 'terraform init -var="aws_access_key=$AWS_ACCESS_KEY" -var="aws_secret_key=$AWS_SECRET_KEY"' 
+        //                     // Use Terraform to switch ALB target group weights
+        //                     sh 'terraform apply -var="blue_weight=0" -var="green_weight=100" -var="aws_access_key=$AWS_ACCESS_KEY" -var="aws_secret_key=$AWS_SECRET_KEY" -auto-approve'
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Deploy to Blue Production') {
+        //     steps {
+        //         dir('configuration') {
+        //             sshagent(credentials: ['ssh_key']) {
+        //                 script {
+        //                     sh 'ssh-keyscan -H 44.222.76.124 >> ~/.ssh/known_hosts'
+        //                     sh 'ansible all -i 44.222.76.124, -m ping -e "ansible_user=ec2-user" -e "ANSIBLE_HOST_KEY_CHECKING=False"'
+        //                     // Use Ansible to deploy to blue production instance
+        //                     sh 'ansible-playbook -i 44.222.76.124, -u ec2-user reset.yml -e "target=44.222.76.124" -e "version=${IMAGE_VERSION}"'
+        //                     withCredentials([
+        //                         string(credentialsId: 'SECRET_KEY', variable: 'SECRET_KEY'),
+        //                         string(credentialsId: 'DB_NAME-prod', variable: 'DB_NAME'),
+        //                         string(credentialsId: 'DB_USER-prod', variable: 'DB_USER'),
+        //                         string(credentialsId: 'DB_PASS-prod', variable: 'DB_PASS'),
+        //                         string(credentialsId: 'DB_HOST-prod', variable: 'DB_HOST'),
+        //                         string(credentialsId: 'EMAIL_PASSWORD', variable: 'EMAIL_PASSWORD')
+        //                     ]) {
+        //                         sh 'ansible-playbook -i 44.222.76.124, -u ec2-user deploy.yml -e "target=44.222.76.124" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_project/app" -e "SECRET_KEY=$SECRET_KEY" -e "DB_NAME=$DB_NAME" -e "DB_USER=$DB_USER" -e "DB_PASS=$DB_PASS" -e "DB_HOST=$DB_HOST" -e "EMAIL_PASSWORD=$EMAIL_PASSWORD"'
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Manual Approval for Blue Production') {
+        //     steps {
+        //         input 'Proceed with deployment to blue production?'
+        //     }
+        // }
+        stage('Switch ALB to Blue') {
             steps {
                 dir('elb') {
                     withCredentials([[
@@ -85,50 +133,11 @@ pipeline {
                     secretKeyVariable: 'AWS_SECRET_KEY'
                 ]]) {
                         script {
-                            // Initialize Terraform
-                            sh 'terraform init -var="aws_access_key=$AWS_ACCESS_KEY" -var="aws_secret_key=$AWS_SECRET_KEY"' 
+                            // // Initialize Terraform
+                            // sh 'terraform init -var="aws_access_key=$AWS_ACCESS_KEY" -var="aws_secret_key=$AWS_SECRET_KEY"' 
                             // Use Terraform to switch ALB target group weights
-                            sh 'terraform apply -var="blue_weight=0" -var="green_weight=100" -var="aws_access_key=$AWS_ACCESS_KEY" -var="aws_secret_key=$AWS_SECRET_KEY" -auto-approve'
+                            sh 'terraform apply -var="blue_weight=100" -var="green_weight=0" -var="aws_access_key=$AWS_ACCESS_KEY" -var="aws_secret_key=$AWS_SECRET_KEY" -auto-approve'
                         }
-                    }
-                }
-            }
-        }
-        stage('Deploy to Blue Production') {
-            steps {
-                dir('configuration') {
-                    sshagent(credentials: ['ssh_key']) {
-                        script {
-                            sh 'ssh-keyscan -H 44.222.76.124 >> ~/.ssh/known_hosts'
-                            sh 'ansible all -i 44.222.76.124, -m ping -e "ansible_user=ec2-user" -e "ANSIBLE_HOST_KEY_CHECKING=False"'
-                            // Use Ansible to deploy to blue production instance
-                            sh 'ansible-playbook -i 44.222.76.124, -u ec2-user reset.yml -e "target=44.222.76.124" -e "version=${IMAGE_VERSION}"'
-                            withCredentials([
-                                string(credentialsId: 'SECRET_KEY', variable: 'SECRET_KEY'),
-                                string(credentialsId: 'DB_NAME-prod', variable: 'DB_NAME'),
-                                string(credentialsId: 'DB_USER-prod', variable: 'DB_USER'),
-                                string(credentialsId: 'DB_PASS-prod', variable: 'DB_PASS'),
-                                string(credentialsId: 'DB_HOST-prod', variable: 'DB_HOST'),
-                                string(credentialsId: 'EMAIL_PASSWORD', variable: 'EMAIL_PASSWORD')
-                            ]) {
-                                sh 'ansible-playbook -i 44.222.76.124, -u ec2-user deploy.yml -e "target=44.222.76.124" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_project/app" -e "SECRET_KEY=$SECRET_KEY" -e "DB_NAME=$DB_NAME" -e "DB_USER=$DB_USER" -e "DB_PASS=$DB_PASS" -e "DB_HOST=$DB_HOST" -e "EMAIL_PASSWORD=$EMAIL_PASSWORD"'
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        stage('Manual Approval for Blue Production') {
-            steps {
-                input 'Proceed with deployment to blue production?'
-            }
-        }
-        stage('Switch ALB to Blue') {
-            steps {
-                dir('elb') {
-                    script {
-                        // Use Terraform to switch ALB target group weights back to blue
-                        sh 'terraform apply -var="blue_weight=100" -var="green_weight=0" -auto-approve'
                     }
                 }
             }
