@@ -77,7 +77,7 @@ pipeline {
         }
         stage('Switch ALB to Green') {
             steps {
-                dir('alb_config') {
+                dir('elb') {
                     script {
                         // Use Terraform to switch ALB target group weights
                         sh 'terraform apply -var="blue_weight=0" -var="green_weight=100" -auto-approve'
@@ -116,7 +116,7 @@ pipeline {
         }
         stage('Switch ALB to Blue') {
             steps {
-                dir('alb_config') {
+                dir('elb') {
                     script {
                         // Use Terraform to switch ALB target group weights back to blue
                         sh 'terraform apply -var="blue_weight=100" -var="green_weight=0" -auto-approve'
