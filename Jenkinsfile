@@ -75,6 +75,11 @@ pipeline {
         //         input 'Switch ALB to Green?'
         //     }
         // }
+        stage('Print Environment Variables') {
+            steps {
+                sh 'printenv'
+            }
+        }
         stage('Switch ALB to Green') {
             steps {
                 dir('elb') {
