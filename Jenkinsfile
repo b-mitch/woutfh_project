@@ -78,13 +78,11 @@ pipeline {
         stage('Switch ALB to Green') {
             steps {
                 dir('elb') {
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials']]) {
-                        script {
-                            // Initialize Terraform
-                            sh 'terraform init'
-                            // Use Terraform to switch ALB target group weights
-                            sh 'terraform apply -var="blue_weight=0" -var="green_weight=100" -auto-approve'
-                        }
+                    script {
+                        // Initialize Terraform
+                        sh 'terraform init'
+                        // Use Terraform to switch ALB target group weights
+                        sh 'terraform apply -var="blue_weight=0" -var="green_weight=100" -auto-approve'
                     }
                 }
             }
