@@ -80,13 +80,15 @@ pipeline {
                 dir('elb') {
                     withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws_credentials'
+                    accessKeyVariable: 'AWS_ACCESS_KEY',
+                    credentialsId: 'aws_credentials',
+                    secretKeyVariable: 'AWS_SECRET_KEY'
                 ]]) {
                         script {
                             // Initialize Terraform
-                            sh 'terraform init' 
+                            sh 'terraform init -var="aws_access_key=$AWS_ACCESS_KEY" -var="aws_secret_key=$AWS_SECRET_KEY"' 
                             // Use Terraform to switch ALB target group weights
-                            sh 'terraform apply -var="blue_weight=0" -var="green_weight=100" -auto-approve'
+                            sh 'terraform apply -var="blue_weight=0" -var="green_weight=100" -var="aws_access_key=$AWS_ACCESS_KEY" -var="aws_secret_key=$AWS_SECRET_KEY" -auto-approve'
                         }
                     }
                 }
