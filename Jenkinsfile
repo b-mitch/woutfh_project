@@ -41,9 +41,23 @@ pipeline {
                 }
             }
         }
-        stage('Manual Approval for Development') {
+        stage('Manual Approval of Development') {
             steps {
                 input 'Proceed with deployment to green production?'
+            }
+        }
+        stage('Tear Down Development Docker Resources') {
+            steps {
+                dir('configuration') {
+                    sshagent(credentials: ['ssh_key']) {
+                        script {
+                            // sh 'ssh-keyscan -H 44.214.134.6 >> ~/.ssh/known_hosts'
+                            sh 'ansible all -i 44.214.134.6, -m ping -e "ansible_user=ec2-user" -e "ANSIBLE_HOST_KEY_CHECKING=False"'
+                            // Use Ansible to build image and deploy to development EC2 instance
+                            sh 'ansible-playbook -i 44.214.134.6, -u ec2-user reset.yml -e "target=44.214.134.6"'
+                        }
+                    }
+                }
             }
         }
         stage('Deploy to Green Production') {
@@ -70,7 +84,7 @@ pipeline {
                 }
             }
         }
-        stage('Manual Approval for Green Production') {
+        stage('Manual Approval of Green Production') {
             steps {
                 input 'Switch ALB to Green?'
             }
@@ -118,9 +132,9 @@ pipeline {
                 }
             }
         }
-        stage('Manual Approval for Blue Production') {
+        stage('Manual Approval of Blue Production') {
             steps {
-                input 'Proceed with deployment to blue production?'
+                input 'Switch ALB to Blue?'
             }
         }
         stage('Switch ALB to Blue') {
