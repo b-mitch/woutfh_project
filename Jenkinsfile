@@ -96,7 +96,7 @@ pipeline {
         }
         stage('Deploy to Blue Production') {
             steps {
-                dir('woutfh_configuration') {
+                dir('configuration') {
                     sshagent(credentials: ['ssh_key']) {
                         script {
                             sh 'ssh-keyscan -H 44.222.76.124 >> ~/.ssh/known_hosts'
