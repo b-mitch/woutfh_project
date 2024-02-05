@@ -78,7 +78,7 @@ pipeline {
         stage('Switch ALB to Green') {
             steps {
                 dir('elb') {
-                    withCredentials([$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials']) {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials']]) {
                         script {
                             // Initialize Terraform
                             sh 'terraform init'
