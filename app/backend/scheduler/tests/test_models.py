@@ -1,13 +1,13 @@
 from django.test import TestCase
 from scheduler.models import Appointment
-from datetime import datetime
+from django.utils import timezone
 from users.models import CustomUser
 
 class AppointmentModelTests(TestCase):
     def setUp(self):
         # Create a sample appointment
         self.appointment = Appointment.objects.create(
-            date=datetime.date(2021, 1, 1),
+            date=timezone.now().date(),
             time='12:00',
             video='Test Video'
         )
@@ -17,7 +17,7 @@ class AppointmentModelTests(TestCase):
 
     # Test the appointment creation
     def test_appointment_creation(self):
-        self.assertEqual(self.appointment.date, datetime.date(2021, 1, 1))
+        self.assertEqual(self.appointment.date, timezone.now().date())
         self.assertEqual(self.appointment.time, '12:00')
         self.assertEqual(self.appointment.video, 'Test Video')
 
