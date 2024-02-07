@@ -46,7 +46,7 @@ pipeline {
                 // Define SSH connection details
                 user: 'ec2-user',
                 host: '44.214.134.6',
-                keyFile: '~/.ssh/id_rsa'
+                keyFile: '~/.ssh/id_rsa',
                 allowAnyHosts: true
             ]
             stage('Run Django Tests') {           
