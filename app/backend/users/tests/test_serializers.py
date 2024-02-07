@@ -35,7 +35,7 @@ class AvailabilitySerializerTests(TestCase):
             'year': 2023,
             'month': 1,
             'day': 1,
-            'times': ['9:00 AM', '10:00 AM', '11:00 AM']
+            'times': {'10:00': '11:00', '12:00': '13:00'}
         }
 
     def test_create_availability_authenticated_user(self):
@@ -49,7 +49,7 @@ class AvailabilitySerializerTests(TestCase):
         self.assertEqual(availability.year, 2023)
         self.assertEqual(availability.month, 1)
         self.assertEqual(availability.day, 1)
-        self.assertEqual(availability.times, ['9:00 AM', '10:00 AM', '11:00 AM'])
+        self.assertEqual(availability.times, {'10:00': '11:00', '12:00': '13:00'})
 
     def test_create_availability_unauthenticated_user(self):
         request = self.factory.post('/api/availability/', self.availability_data)

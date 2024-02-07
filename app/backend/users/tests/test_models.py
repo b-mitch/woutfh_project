@@ -12,7 +12,7 @@ class AvailabilityModelTests(TestCase):
             year=2024,
             month=3,
             day=3,
-            times=['9:00 AM', '10:00 AM', '11:00 AM']
+            times={'10:00': '11:00', '12:00': '13:00'}
         )
 
     def test_availability_creation(self):
@@ -21,7 +21,7 @@ class AvailabilityModelTests(TestCase):
         self.assertEqual(self.availability.year, 2024)
         self.assertEqual(self.availability.month, 3)
         self.assertEqual(self.availability.day, 3)
-        self.assertEqual(self.availability.times, ['9:00 AM', '10:00 AM', '11:00 AM'])
+        self.assertEqual(self.availability.times, {'10:00': '11:00', '12:00': '13:00'})
 
     def test_availability_string_representation(self):
         # Test the availability string representation
