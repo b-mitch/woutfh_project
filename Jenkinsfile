@@ -16,31 +16,31 @@ pipeline {
                 }
             }
         }
-        // stage('Build and Deploy to Development') {
-        //     steps {
-        //         dir('configuration') {
-        //             sshagent(credentials: ['ssh_key']) {
-        //                 script {
-        //                     // sh 'ssh-keyscan -H 44.214.134.6 >> ~/.ssh/known_hosts'
-        //                     sh 'ansible all -i 44.214.134.6, -m ping -e "ansible_user=ec2-user" -e "ANSIBLE_HOST_KEY_CHECKING=False"'
-        //                     // Use Ansible to build image and deploy to development EC2 instance
-        //                     sh 'ansible-playbook -i 44.214.134.6, -u ec2-user reset.yml -e "target=44.214.134.6"'
-        //                     sh 'ansible-playbook -i 44.214.134.6, -u ec2-user build.yml -e "target=44.214.134.6" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_project/app" -vvv'
-        //                     withCredentials([
-        //                         string(credentialsId: 'SECRET_KEY', variable: 'SECRET_KEY'),
-        //                         string(credentialsId: 'DB_NAME', variable: 'DB_NAME'),
-        //                         string(credentialsId: 'DB_USER', variable: 'DB_USER'),
-        //                         string(credentialsId: 'DB_PASS', variable: 'DB_PASS'),
-        //                         string(credentialsId: 'DB_HOST', variable: 'DB_HOST'),
-        //                         string(credentialsId: 'EMAIL_PASSWORD', variable: 'EMAIL_PASSWORD')
-        //                     ]) {
-        //                         sh 'ansible-playbook -i 44.214.134.6, -u ec2-user deploy.yml -e "target=44.214.134.6" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_project/app" -e "SECRET_KEY=$SECRET_KEY" -e "DB_NAME=$DB_NAME" -e "DB_USER=$DB_USER" -e "DB_PASS=$DB_PASS" -e "DB_HOST=$DB_HOST" -e "EMAIL_PASSWORD=$EMAIL_PASSWORD"'
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Build and Deploy to Development') {
+            steps {
+                dir('configuration') {
+                    sshagent(credentials: ['ssh_key']) {
+                        script {
+                            // sh 'ssh-keyscan -H 44.214.134.6 >> ~/.ssh/known_hosts'
+                            sh 'ansible all -i 44.214.134.6, -m ping -e "ansible_user=ec2-user" -e "ANSIBLE_HOST_KEY_CHECKING=False"'
+                            // Use Ansible to build image and deploy to development EC2 instance
+                            sh 'ansible-playbook -i 44.214.134.6, -u ec2-user reset.yml -e "target=44.214.134.6"'
+                            sh 'ansible-playbook -i 44.214.134.6, -u ec2-user build.yml -e "target=44.214.134.6" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_project/app" -vvv'
+                            withCredentials([
+                                string(credentialsId: 'SECRET_KEY', variable: 'SECRET_KEY'),
+                                string(credentialsId: 'DB_NAME', variable: 'DB_NAME'),
+                                string(credentialsId: 'DB_USER', variable: 'DB_USER'),
+                                string(credentialsId: 'DB_PASS', variable: 'DB_PASS'),
+                                string(credentialsId: 'DB_HOST', variable: 'DB_HOST'),
+                                string(credentialsId: 'EMAIL_PASSWORD', variable: 'EMAIL_PASSWORD')
+                            ]) {
+                                sh 'ansible-playbook -i 44.214.134.6, -u ec2-user deploy.yml -e "target=44.214.134.6" -e "version=${IMAGE_VERSION}" -e "app_root_directory=woutfh_project/app" -e "SECRET_KEY=$SECRET_KEY" -e "DB_NAME=$DB_NAME" -e "DB_USER=$DB_USER" -e "DB_PASS=$DB_PASS" -e "DB_HOST=$DB_HOST" -e "EMAIL_PASSWORD=$EMAIL_PASSWORD"'
+                            }
+                        }
+                    }
+                }
+            }
+        }
         stage('Run Django Tests') {
             steps {
                 sshagent(credentials: ['ssh_key']) {
