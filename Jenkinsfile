@@ -43,22 +43,25 @@ pipeline {
         // }
         stage('Run Django Tests') {
             steps {
-                // Execute commands within the Docker container in the development instance
-                sshagent(credentials: ['ssh_key']) {
-                    // Define the SSH command to execute multiple commands on the EC2 instance
-                    def sshCommand = """
-                        ssh -i /path/to/your/ssh/key ec2-user@44.214.134.6 << 'EOF'
-                        container_id=\$(docker ps -q --filter 'ancestor=bmitchum/woutfh_api-prod')
-                        if [ -n "${container_id}" ]; then
-                            sudo docker exec -i ${container_id} python3 woutfh_project/app/backend/manage.py test'
-                        else
-                            echo 'No matching container found'
-                        fi
-                        exit
-                        EOF
-                    """
-                    // Execute the SSH command
-                    sh sshCommand
+                script {
+                    def remote = [
+                        // Define SSH connection details
+                        user: 'ec2-user',
+                        host: '44.214.134.6',
+                        keyFile: '~/.ssh/id_rsa'
+                    ]
+                    
+                    // Connect to the remote server
+                    sshCommand remote: remote, command: "docker ps -q --filter 'ancestor=bmitchum/woutfh_api-prod'", returnStdout: true
+                    def containerId = sh(script: "cat stdout", returnStdout: true).trim()
+
+                    // Check if a container ID is retrieved
+                    if (containerId) {
+                        // Run Django tests inside the selected Docker container
+                        sshCommand remote: remote, command: "sudo docker exec -i ${containerId} python3 woutfh_project/app/backend/manage.py test"
+                    } else {
+                        echo 'No matching container found'
+                    }
                 }
             }
         }
