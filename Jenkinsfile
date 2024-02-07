@@ -48,8 +48,7 @@ pipeline {
                     // Define the SSH command to execute multiple commands on the EC2 instance
                     def sshCommand = """
                         ssh -i /path/to/your/ssh/key ec2-user@44.214.134.6 << 'EOF'
-                        sudo docker ps -q --filter 'ancestor=bmitchum/woutfh_api-prod' > container_id.txt
-                        container_id=${(<container_id.txt)}
+                        container_id=\$(docker ps -q --filter 'ancestor=bmitchum/woutfh_api-prod')
                         if [ -n "${container_id}" ]; then
                             sudo docker exec -i ${container_id} python3 woutfh_project/app/backend/manage.py test'
                         else
