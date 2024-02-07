@@ -48,6 +48,7 @@ pipeline {
                         sh 'ls'
                         sh 'docker ps'
                     }
+                }
             }
         }
         stage('Manual Approval of Development') {
