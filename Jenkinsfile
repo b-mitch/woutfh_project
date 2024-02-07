@@ -48,7 +48,7 @@ pipeline {
                         def sshScript = '''
                             docker ps -q --filter ancestor=bmitchum/woutfh_api-prod:1.1.0
                             docker ps -q --filter ancestor=bmitchum/woutfh_api-prod:1.1.0 > container_id.txt
-                            ls -al
+                            cat container_id.txt
                             docker exec -it $container_id python3 manage.py test
                         '''
                         sh "ssh -i ~/.ssh/id_rsa ec2-user@44.214.134.6 << EOF\n${sshScript}\nEOF"
