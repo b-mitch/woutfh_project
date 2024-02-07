@@ -46,6 +46,7 @@ pipeline {
                 sshagent(credentials: ['ssh_key']) {
                     script {
                         def sshScript = '''
+                            docker ps -q --filter ancestor=bmitchum/woutfh_api-prod:1.1.0
                             container_id=$(docker ps -q --filter ancestor=bmitchum/woutfh_api-prod:1.1.0)
                             echo $container_id
                             docker exec -it $container_id python manage.py test
