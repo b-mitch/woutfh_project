@@ -43,34 +43,11 @@ pipeline {
         // }
         stage('Run Django Tests') {
             steps {
-                node {
-                    def remote = [
-                        // Define SSH connection details
-                        user: 'ec2-user',
-                        host: '44.214.134.6',
-                        keyFile: '~/.ssh/id_rsa',
-                        allowAnyHosts: true
-                    ]
+                sshagent(credentials: ['ssh_key']) {
                     script {
-                        
-                        // Execute the command remotely and capture its output
-                        def commandOutput = sshCommand remote: remote, command: "docker ps -q --filter 'ancestor=bmitchum/woutfh_api-prod:${IMAGE_VERSION}'"
-                        
-                        // Print the output of the command
-                        println "Command output: ${commandOutput}"
-                        
-                        // Process the command output if needed
-                        def containerId = commandOutput.trim()
-
-                        // Check if a container ID is retrieved
-                        if (containerId) {
-                            // Run Django tests inside the selected Docker container
-                            sshCommand remote: remote, command: "sudo docker exec -i ${containerId} python3 woutfh_project/app/backend/manage.py test"
-                        } else {
-                            echo 'No matching container found'
-                        }
+                        sh 'ls'
+                        sh 'docker ps'
                     }
-                }
             }
         }
         stage('Manual Approval of Development') {
