@@ -52,14 +52,14 @@ pipeline {
                     ]
                     
                     // Execute the command remotely and capture its output
-                    def commandOutput = sshCommand remote: remote, command: "docker ps -q --filter 'ancestor=bmitchum/woutfh_api-prod'"
+                    def commandOutput = sshCommand remote: remote, command: "docker ps -q --filter 'ancestor=bmitchum/woutfh_api-prod:${IMAGE_VERSION}'"
                     
                     // Print the output of the command
                     println "Command output: ${commandOutput}"
                     
                     // Process the command output if needed
                     def containerId = commandOutput.trim()
-                    
+
                     // Check if a container ID is retrieved
                     if (containerId) {
                         // Run Django tests inside the selected Docker container
