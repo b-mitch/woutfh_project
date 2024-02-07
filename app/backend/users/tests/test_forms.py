@@ -1,6 +1,6 @@
 from django.test import TestCase
-from .forms import UserForm
-from .models import CustomUser
+from users.forms import UserForm
+from users.models import CustomUser
 
 class UserFormTest(TestCase):
 

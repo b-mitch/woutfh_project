@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
-from .models import Appointment
+from scheduler.models import Appointment
 from users.models import CustomUser
 from .serializers import AppointmentSerializer
 from rest_framework_simplejwt.tokens import AccessToken

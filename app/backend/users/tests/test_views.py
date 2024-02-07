@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
-from .models import CustomUser, Availability
+from users.models import CustomUser, Availability
 
 class RegisterViewTest(APITestCase):
     def test_register_user(self):
