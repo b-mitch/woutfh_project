@@ -45,12 +45,12 @@ pipeline {
             steps {
                 sshagent(credentials: ['ssh_key']) {
                     script {
-                        sh """ssh -i "~/.ssh/id_rsa" ec2-user@44.214.134.6 << EOF
-                            container_id=\$(docker ps -q --filter ancestor=bmitchum/woutfh_api-prod:1.1.0)
-                            echo \$container_id
-                            docker exec -it \$container_id python3 woutfh_project/app/backend/manage.py test
-                            exit
-                        EOF"""
+                        def sshScript = '''
+                            container_id=$(docker ps -q --filter ancestor=bmitchum/woutfh_api-prod:1.1.0)
+                            echo $container_id
+                            docker exec -it $container_id python manage.py test
+                        '''
+                        sh "ssh -i ~/.ssh/id_rsa ec2-user@44.214.134.6 << EOF\n${sshScript}\nEOF"
                     }
                 }
             }
