@@ -55,7 +55,7 @@ pipeline {
                         def containerId = sh(script: "ssh -i ~/.ssh/id_rsa ec2-user@44.214.134.6 'cat container_id.txt'", returnStdout: true).trim()
 
                         // Run Docker command using the retrieved container ID
-                        sh "ssh -i ~/.ssh/id_rsa ec2-user@44.214.134.6 'docker exec ${containerId} python3 manage.py test'"
+                        sh "ssh -i ~/.ssh/id_rsa ec2-user@44.214.134.6 'docker exec ${containerId} python3 woutfh_project/app/backend/manage.py test'"
                     }
                 }
             }
