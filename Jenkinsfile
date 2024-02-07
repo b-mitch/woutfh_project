@@ -45,13 +45,14 @@ pipeline {
             steps {
                 sshagent(credentials: ['ssh_key']) {
                     script {
-                        def sshScript = '''
-                            docker ps -q --filter ancestor=bmitchum/woutfh_api-prod:1.1.0
-                            docker ps -q --filter ancestor=bmitchum/woutfh_api-prod:1.1.0 > container_id.txt
-                            cat container_id.txt
-                            docker exec -it $container_id python3 manage.py test
-                        '''
-                        sh "ssh -i ~/.ssh/id_rsa ec2-user@44.214.134.6 << EOF\n${sshScript}\nEOF"
+                        // Save the container ID to a file
+                        sh "ssh -i ~/.ssh/id_rsa ec2-user@44.214.134.6 'docker ps -q --filter ancestor=bmitchum/woutfh_api-prod:${IMAGE_VERSION}' > container_id.txt"
+                        
+                        // Retrieve the container ID from the file
+                        def containerId = sh(script: "ssh -i ~/.ssh/id_rsa ec2-user@44.214.134.6 'cat container_id.txt'", returnStdout: true).trim()
+
+                        // Run Docker command using the retrieved container ID
+                        sh "ssh -i ~/.ssh/id_rsa ec2-user@44.214.134.6 'docker exec -it ${containerId} python3 manage.py test'"
                     }
                 }
             }
