@@ -41,6 +41,14 @@ pipeline {
                 }
             }
         }
+        stage('Run Django Tests') {
+            steps {
+                dir('app/backend') {
+                    // Run Django tests
+                    sh 'python3 manage.py test'
+                }
+            }
+        }
         stage('Manual Approval of Development') {
             steps {
                 input 'Proceed with deployment to green production?'
