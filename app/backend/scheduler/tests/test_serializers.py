@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.utils import timezone
 from scheduler.serializers import AppointmentSerializer
-from scheduler.models import Appointment, CustomUser
+from scheduler.models import Appointment 
+from users.models import CustomUser
 
 class AppointmentSerializerTests(TestCase):
     def setUp(self):
