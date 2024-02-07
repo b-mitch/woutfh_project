@@ -44,8 +44,25 @@ pipeline {
         stage('Run Django Tests') {
             steps {
                 dir('app/backend') {
-                    // Run Django tests
-                    sh 'python3 manage.py test'
+                    // Execute commands within the Docker container
+                    script {
+                        // Run Docker command to list containers and filter based on criteria
+                        def containerId = sh(script: "docker ps -q --filter 'ancestor=bmitchum/woutfh_api-prod'", returnStdout: true).trim()
+
+                        // Check if a container ID is retrieved
+                        if (containerId) {
+                            // Run Django tests inside the selected Docker container
+                            docker.container(containerId).inside {
+                                // Activate virtual environment if applicable
+                                sh 'source /path/to/your/venv/bin/activate || true'
+
+                                // Run Django tests
+                                sh 'python manage.py test'
+                            }
+                        } else {
+                            error "No matching container found"
+                        }
+                    }
                 }
             }
         }
