@@ -45,7 +45,11 @@ pipeline {
             steps {
                 sshagent(credentials: ['ssh_key']) {
                     script {
-                        sh 'ssh -i "~/.ssh/id_rsa" ec2-user@44.214.134.6 && ls && docker ps'
+                        sh """ssh -i "~/.ssh/id_rsa" ec2-user@44.214.134.6 << EOF
+                            ls
+                            docker ps
+                            exit
+                        EOF"""
                     }
                 }
             }
