@@ -25,15 +25,15 @@ jobs:
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
-        path: woutfh_project/app/frontend
         node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
 
-    - name: Change directory
-      run: cd app/frontend
-
+    - name: install dependencies
+      run: yarn install --frozen-lockfile
+      working-directory: ./app/frontend
+        
     - name: run test build commands
       run: | 
         yarn install --frozen-lockfile
         yarn build
         yarn test
+      working-directory: ./app/frontend
