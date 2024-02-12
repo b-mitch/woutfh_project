@@ -2,9 +2,9 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "development" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "development" ]
 
 jobs:
   build:
@@ -17,6 +17,7 @@ jobs:
 
     env:
       SECRET_KEY: ${{ secrets.DJANGO_TEST_SECRET }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
 
     steps:
     - uses: actions/checkout@v3
