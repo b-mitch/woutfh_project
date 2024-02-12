@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 from datetime import timedelta
 from decouple import config
 
@@ -111,23 +112,22 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASS'),
-        'HOST': config('DB_HOST'),
-        'PORT': 5432,
-        'TEST': {
-            'NAME': 'test',
-        },
-    },
-    'test': {
+if 'test' in sys.argv:
+    DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        'NAME': 'mydatabase'
+    }   
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASS'),
+            'HOST': config('DB_HOST'),
+            'PORT': 5432,
+        }
     }
-}
 
 
 # Password validation
