@@ -16,7 +16,7 @@ jobs:
         python-version: [3.8, 3.9]
 
     env:
-      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_TEST_SECRET }}
+      SECRET_KEY: ${{ secrets.DJANGO_TEST_SECRET }}
 
     steps:
     - uses: actions/checkout@v3
