@@ -119,7 +119,7 @@ DATABASES = {
         'PASSWORD': config('DB_PASS'),
         'HOST': config('DB_HOST'),
         'PORT': 5432,
-    }
+    },
     'test': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': ':memory:',
