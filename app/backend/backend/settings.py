@@ -114,7 +114,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 if 'test' in sys.argv:
     DATABASES = {
-        'default': {
+        'test': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'mydatabase'
         }
