@@ -37,7 +37,10 @@ env:
   ECS_CLUSTER: ProdCluster                 # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: .aws/taskdef.json # set this to the path to your Amazon ECS task definition
                                                # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: webserver           # set this to the name of the container in the
+  FRONTEND_CONTAINER_NAME: webserver           # set this to the name of the frontend container in the
+                                               # containerDefinitions section of your task definition
+
+  BACKEND_CONTAINER_NAME: api                  # set this to the name of the backend container in the
                                                # containerDefinitions section of your task definition
 
 permissions:
@@ -64,8 +67,8 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build, tag, and push image to Amazon ECR
-      id: build-image
+    - name: Build, tag, and push frontend image to Amazon ECR
+      id: build-frontend-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
@@ -73,18 +76,34 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-      working-directory: ./app
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY/$FRONTEND_CONTAINER_NAME:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY/$FRONTEND_CONTAINER_NAME:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY/$FRONTEND_CONTAINER_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
+      working-directory: ./app/frontend
 
-    - name: Fill in the new image ID in the Amazon ECS task definition
-      id: task-def
+    - name: Build, tag, and push backend image to Amazon ECR
+      id: build-backend-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        # Build a docker container and
+        # push it to ECR so that it can
+        # be deployed to ECS.
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY/$BACKEND_CONTAINER_NAME:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY/$BACKEND_CONTAINER_NAME:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY/$BACKEND_CONTAINER_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
+      working-directory: ./app/backend
+
+    - name: Fill in the new image IDs in the Amazon ECS task definition
+      id: frontend-task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        container-name: ${{ env.CONTAINER_NAME }}
-        image: ${{ steps.build-image.outputs.image }}
+        frontend-container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
+        frontend-image: ${{ steps.build-frontend-image.outputs.image }}
+        backend-container-name: ${{ env.BACKEND_CONTAINER_NAME }}
+        backend-image: ${{ steps.build-backend-image.outputs.image }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
