@@ -117,13 +117,12 @@ jobs:
         task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
         container-name: ${{ env.BACKEND_CONTAINER_NAME }}
         image: ${{ steps.build-backend-image.outputs.image }}
-        environment-variables: |
-          SECRET_KEY=${{ secrets.SECRET_KEY }}, 
-          DB_NAME=${{ secrets.DB_NAME }}, 
-          DB_USER=${{ secrets.DB_USER }}, 
-          DB_PASS=${{ secrets.DB_PASS }}, 
-          DB_HOST=${{ secrets.DB_HOST }}, 
-          EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
+        environment-variables: SECRET_KEY=${{ secrets.SECRET_KEY }} 
+        environment-variables: DB_NAME=${{ secrets.DB_NAME }}
+        environment-variables: DB_USER=${{ secrets.DB_USER }} 
+        environment-variables: DB_PASS=${{ secrets.DB_PASS }} 
+        environment-variables: DB_HOST=${{ secrets.DB_HOST }} 
+        environment-variables: EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
