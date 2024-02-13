@@ -10,19 +10,15 @@ WORKDIR /frontend
 
 # These two lines will allow us to pass in an environment
 # variable when the image is *built* (not run).  For local
-# development, localhost; for production, your EC2's IP address
+# development, localhost; for ECS production, your ALB IP address
 
 
 ARG BASE_URL=localhost
 ENV BASE_URL=$BASE_URL
 
-# COPY ./frontend/package.json . # for manual builds
-# COPY ./frontend/yarn.lock . # for manual builds
-COPY /app/frontend/package.json .
-COPY /app/frontend/yarn.lock .
+COPY package.json yarn.lock ./
 RUN yarn install
-# COPY ./frontend . # for manual builds
-COPY /app/frontend .
+COPY . .
 RUN yarn build
 
 ###########################
@@ -36,5 +32,5 @@ RUN yarn build
 ###########################
 FROM nginx:alpine
 
-COPY ./webserver/default.conf /etc/nginx/conf.d/default.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /frontend/build /usr/share/nginx/html
