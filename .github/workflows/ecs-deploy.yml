@@ -67,32 +67,38 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: Set outputs
+      id: vars
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+    - name: Check outputs
+      run: echo ${{ steps.vars.outputs.sha_short }}
+
     - name: Build, tag, and push frontend image to Amazon ECR
       id: build-frontend-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }} 
+        IMAGE_TAG: ${{ steps.vars.outputs.sha_short }} 
       run: |
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG::7 .
-        docker push $ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG::7
-        echo "image=$ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG::7" >> $GITHUB_OUTPUT
+        docker build -t $ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       working-directory: app/frontend
 
     - name: Build, tag, and push backend image to Amazon ECR
       id: build-backend-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }}
+        IMAGE_TAG: ${{ steps.vars.outputs.sha_short }}
       run: |
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG::7 .
-        docker push $ECR_REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG::7
-        echo "image=$ECR_REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG::7" >> $GITHUB_OUTPUT
+        docker build -t $ECR_REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       working-directory: app/backend
 
     - name: Fill in the new frontend image ID in the Amazon ECS task definition
