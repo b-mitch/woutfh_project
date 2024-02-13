@@ -96,15 +96,21 @@ jobs:
         echo "image=$ECR_REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       working-directory: app/backend
 
-    - name: Fill in the new image IDs in the Amazon ECS task definition
+    - name: Fill in the new frontend image ID in the Amazon ECS task definition
       id: frontend-task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
-        image: ${{ steps.build-frontend-image.outputs.image }}
-        container-name: ${{ env.BACKEND_CONTAINER_NAME }}
-        image: ${{ steps.build-backend-image.outputs.image }}
+        frontend-container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
+        frontend-image: ${{ steps.build-frontend-image.outputs.image }}
+    
+    - name: Fill in the new backend image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        backend-container-name: ${{ env.BACKEND_CONTAINER_NAME }}
+        backend-image: ${{ steps.build-backend-image.outputs.image }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
