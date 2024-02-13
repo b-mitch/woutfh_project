@@ -16,10 +16,13 @@ WORKDIR /frontend
 ARG BASE_URL=localhost
 ENV BASE_URL=$BASE_URL
 
-COPY ./frontend/package.json .
-COPY ./frontend/yarn.lock . 
+# COPY ./frontend/package.json . # for manual builds
+# COPY ./frontend/yarn.lock . # for manual builds
+COPY /app/frontend/package.json .
+COPY /app/frontend/yarn.lock .
 RUN yarn install
-COPY ./frontend .
+# COPY ./frontend . # for manual builds
+COPY /app/frontend .
 RUN yarn build
 
 ###########################
