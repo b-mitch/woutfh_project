@@ -36,7 +36,7 @@ env:
   BACKEND_ECR_REPOSITORY: woutfh-backend    # set this to your backend Amazon ECR repository name
   ECS_SERVICE: prod-service                 # set this to your Amazon ECS service name
   ECS_CLUSTER: ProdCluster                  # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: woutfh-defs          # set this to the name of your Amazon ECS task definition
+  ECS_TASK_DEFINITION: .aws/task-def.json    # set this to the path to your Amazon ECS task definition
                                             # file, e.g. .aws/task-definition.json
   FRONTEND_CONTAINER_NAME: webserver        # set this to the name of the frontend container in the
                                             # containerDefinitions section of your task definition
@@ -101,27 +101,37 @@ jobs:
         echo "image=$ECR_REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       working-directory: app/backend
 
-    - name: Fetch Task Definition
-      id: fetch-task-def
-      run: |
-        # Fetch the latest task definition JSON and store it as a variable
-        "task_definition=$(aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }})" >> $GITHUB_OUTPUT
-
-    - name: Fill in the new frontend image ID in the Amazon ECS task definition
+    - name: Fill in the new frontend image ID and secrets in the Amazon ECS task definition
       id: frontend-task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: ${{ steps.fetch-task-def.outputs.task_definition }}
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
         container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
         image: ${{ steps.build-frontend-image.outputs.image }}
+        environment: |
+          - name: REACT_YOUTUBE_API_KEY
+            value: ${{ secrets.REACT_YOUTUBE_API_KEY }}
     
-    - name: Fill in the new backend image ID in the Amazon ECS task definition
+    - name: Fill in the new backend image ID and secrets in the Amazon ECS task definition
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
         container-name: ${{ env.BACKEND_CONTAINER_NAME }}
         image: ${{ steps.build-backend-image.outputs.image }}
+        environment: |
+          - name: SECRET_KEY
+            value: ${{ secrets.SECRET_KEY }}
+          - name: DB_NAME
+            value: ${{ secrets.DB_NAME }}
+          - name: DB_USER
+            value: ${{ secrets.DB_USER }}
+          - name: DB_PASS
+            value: ${{ secrets.DB_PASS }}
+          - name: DB_HOST
+            value: ${{ secrets.DB_HOST }}
+          - name: EMAIL_PASSWORD
+            value: ${{ secrets.EMAIL_PASSWORD }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -130,10 +140,3 @@ jobs:
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
-      env:
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        DB_NAME: ${{ secrets.DB_NAME }}
-        DB_USER: ${{ secrets.DB_USERNAME }}
-        DB_PASS: ${{ secrets.DB_PASSWORD }}
-        DB_HOST: ${{ secrets.DB_HOST }}
-        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
