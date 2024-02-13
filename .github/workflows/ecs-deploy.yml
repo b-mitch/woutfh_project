@@ -105,14 +105,13 @@ jobs:
       id: fetch-task-def
       run: |
         # Fetch the latest task definition JSON and store it as a variable
-        task_definition_json=$(aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }})
-        echo "::set-output name=task-definition-json::$task_definition_json"
+        "task_definition=$(aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }})" >> $GITHUB_OUTPUT
 
     - name: Fill in the new frontend image ID in the Amazon ECS task definition
       id: frontend-task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: ${{ steps.fetch-task-def.outputs.task-definition-json }}
+        task-definition: ${{ steps.fetch-task-def.outputs.task_definition }}
         container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
         image: ${{ steps.build-frontend-image.outputs.image }}
     
