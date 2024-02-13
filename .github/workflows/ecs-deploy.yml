@@ -31,18 +31,17 @@ on:
     branches: [ "main" ]
 
 env:
-  AWS_REGION: us-east-1                   # set this to your preferred AWS region, e.g. us-west-1
+  AWS_REGION: us-east-1                     # set this to your preferred AWS region, e.g. us-west-1
   FRONTEND_ECR_REPOSITORY: woutfh-frontend  # set this to your frontend Amazon ECR repository name
-  BACKEND_ECR_REPOSITORY: woutfh-backend  # set this to your backend Amazon ECR repository name
+  BACKEND_ECR_REPOSITORY: woutfh-backend    # set this to your backend Amazon ECR repository name
   ECS_SERVICE: prod-service                 # set this to your Amazon ECS service name
-  ECS_CLUSTER: ProdCluster                 # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: .aws/taskdef.json # set this to the path to your Amazon ECS task definition
-                                               # file, e.g. .aws/task-definition.json
-  FRONTEND_CONTAINER_NAME: webserver           # set this to the name of the frontend container in the
-                                               # containerDefinitions section of your task definition
-
-  BACKEND_CONTAINER_NAME: api                  # set this to the name of the backend container in the
-                                               # containerDefinitions section of your task definition
+  ECS_CLUSTER: ProdCluster                  # set this to your Amazon ECS cluster name
+  ECS_TASK_DEFINITION: .aws/taskdef.json    # set this to the path to your Amazon ECS task definition
+                                            # file, e.g. .aws/task-definition.json
+  FRONTEND_CONTAINER_NAME: webserver        # set this to the name of the frontend container in the
+                                            # containerDefinitions section of your task definition
+  BACKEND_CONTAINER_NAME: api               # set this to the name of the backend container in the
+                                            # containerDefinitions section of your task definition
 
 permissions:
   contents: read
@@ -101,16 +100,16 @@ jobs:
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        frontend-container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
-        frontend-image: ${{ steps.build-frontend-image.outputs.image }}
+        container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
+        image: ${{ steps.build-frontend-image.outputs.image }}
     
     - name: Fill in the new backend image ID in the Amazon ECS task definition
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        backend-container-name: ${{ env.BACKEND_CONTAINER_NAME }}
-        backend-image: ${{ steps.build-backend-image.outputs.image }}
+        container-name: ${{ env.BACKEND_CONTAINER_NAME }}
+        image: ${{ steps.build-backend-image.outputs.image }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
