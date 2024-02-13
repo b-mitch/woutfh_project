@@ -101,10 +101,10 @@ jobs:
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        frontend-container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
-        frontend-image: ${{ steps.build-frontend-image.outputs.image }}
-        backend-container-name: ${{ env.BACKEND_CONTAINER_NAME }}
-        backend-image: ${{ steps.build-backend-image.outputs.image }}
+        container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
+        image: ${{ steps.build-frontend-image.outputs.image }}
+        container-name: ${{ env.BACKEND_CONTAINER_NAME }}
+        image: ${{ steps.build-backend-image.outputs.image }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
