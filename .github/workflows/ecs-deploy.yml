@@ -79,7 +79,7 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY/$FRONTEND_CONTAINER_NAME:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY/$FRONTEND_CONTAINER_NAME:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY/$FRONTEND_CONTAINER_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
-      working-directory: ./app/frontend
+      working-directory: ./app/webserver
 
     - name: Build, tag, and push backend image to Amazon ECR
       id: build-backend-image
