@@ -32,7 +32,8 @@ on:
 
 env:
   AWS_REGION: us-east-1                   # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: woutfh-project           # set this to your Amazon ECR repository name
+  FRONTEND_ECR_REPOSITORY: woutfh-frontend  # set this to your frontend Amazon ECR repository name
+  BACKEND_ECR_REPOSITORY: woutfh-backend  # set this to your backend Amazon ECR repository name
   ECS_SERVICE: prod-service                 # set this to your Amazon ECS service name
   ECS_CLUSTER: ProdCluster                 # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: .aws/taskdef.json # set this to the path to your Amazon ECS task definition
@@ -76,9 +77,9 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY/$FRONTEND_CONTAINER_NAME:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY/$FRONTEND_CONTAINER_NAME:$IMAGE_TAG
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY/$FRONTEND_CONTAINER_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        docker build -t $ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       working-directory: app/frontend
 
     - name: Build, tag, and push backend image to Amazon ECR
@@ -90,9 +91,9 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY/$BACKEND_CONTAINER_NAME:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY/$BACKEND_CONTAINER_NAME:$IMAGE_TAG
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY/$BACKEND_CONTAINER_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        docker build -t $ECR_REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       working-directory: app/backend
 
     - name: Fill in the new image IDs in the Amazon ECS task definition
