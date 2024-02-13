@@ -108,7 +108,7 @@ jobs:
         task-definition: ${{ env.ECS_TASK_DEFINITION }}
         container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
         image: ${{ steps.build-frontend-image.outputs.image }}
-        environment: |
+        environment-variables: |
           - name: REACT_YOUTUBE_API_KEY
             value: ${{ secrets.REACT_YOUTUBE_API_KEY }}
     
@@ -119,7 +119,7 @@ jobs:
         task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
         container-name: ${{ env.BACKEND_CONTAINER_NAME }}
         image: ${{ steps.build-backend-image.outputs.image }}
-        environment: |
+        environment-variables: |
           - name: SECRET_KEY
             value: ${{ secrets.SECRET_KEY }}
           - name: DB_NAME
