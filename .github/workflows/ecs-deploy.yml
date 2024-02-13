@@ -108,9 +108,7 @@ jobs:
         task-definition: ${{ env.ECS_TASK_DEFINITION }}
         container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
         image: ${{ steps.build-frontend-image.outputs.image }}
-        environment-variables: |
-          - name: REACT_YOUTUBE_API_KEY
-            value: ${{ secrets.REACT_YOUTUBE_API_KEY }}
+        environment-variables: REACT_YOUTUBE_API_KEY=${{ secrets.REACT_YOUTUBE_API_KEY }}
     
     - name: Fill in the new backend image ID and secrets in the Amazon ECS task definition
       id: task-def
@@ -120,18 +118,7 @@ jobs:
         container-name: ${{ env.BACKEND_CONTAINER_NAME }}
         image: ${{ steps.build-backend-image.outputs.image }}
         environment-variables: |
-          - name: SECRET_KEY
-            value: ${{ secrets.SECRET_KEY }}
-          - name: DB_NAME
-            value: ${{ secrets.DB_NAME }}
-          - name: DB_USER
-            value: ${{ secrets.DB_USER }}
-          - name: DB_PASS
-            value: ${{ secrets.DB_PASS }}
-          - name: DB_HOST
-            value: ${{ secrets.DB_HOST }}
-          - name: EMAIL_PASSWORD
-            value: ${{ secrets.EMAIL_PASSWORD }}
+          [SECRET_KEY=${{ secrets.SECRET_KEY }}, DB_NAME=${{ secrets.DB_NAME }}, DB_USER=${{ secrets.DB_USER }}, DB_PASS=${{ secrets.DB_PASS }}, DB_HOST=${{ secrets.DB_HOST }}, EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}]
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
