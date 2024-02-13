@@ -36,7 +36,7 @@ env:
   BACKEND_ECR_REPOSITORY: woutfh-backend    # set this to your backend Amazon ECR repository name
   ECS_SERVICE: prod-service                 # set this to your Amazon ECS service name
   ECS_CLUSTER: ProdCluster                  # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: .aws/task-def.json    # set this to the path to your Amazon ECS task definition
+  ECS_TASK_DEFINITION: woutfh-defs          # set this to the name of your Amazon ECS task definition
                                             # file, e.g. .aws/task-definition.json
   FRONTEND_CONTAINER_NAME: webserver        # set this to the name of the frontend container in the
                                             # containerDefinitions section of your task definition
@@ -101,11 +101,18 @@ jobs:
         echo "image=$ECR_REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       working-directory: app/backend
 
+    - name: Fetch Task Definition
+      id: fetch-task-def
+      run: |
+        # Fetch the latest task definition JSON and store it as a variable
+        task_definition_json=$(aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }})
+        echo "::set-output name=task-definition-json::$task_definition_json"
+
     - name: Fill in the new frontend image ID in the Amazon ECS task definition
       id: frontend-task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        task-definition: ${{ steps.fetch-task-def.outputs.task-definition-json }}
         container-name: ${{ env.FRONTEND_CONTAINER_NAME }}
         image: ${{ steps.build-frontend-image.outputs.image }}
     
