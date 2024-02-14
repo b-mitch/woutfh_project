@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    '34.239.233.138', 
+    'http://api-alb-1897774087.us-east-1.elb.amazonaws.com', 
     'woutfh.com',
     'www.woutfh.com', 
     'api',

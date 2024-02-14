@@ -11,4 +11,7 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
+# Apply Django migrations
+RUN python manage.py migrate
+
 CMD gunicorn --bind 0.0.0.0:8000 --workers 3 backend.wsgi:application
