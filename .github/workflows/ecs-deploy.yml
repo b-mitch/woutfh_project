@@ -44,6 +44,9 @@ env:
                                             # containerDefinitions section of your task definition
   BACKEND_CONTAINER_NAME: api               # set this to the name of the backend container in the
                                             # containerDefinitions section of your task definition
+  CODEDEPLOY_APP: woutfh                    # name of codedeploy app
+  FRONTEND_CODEDEPLOY_GROUP: web-blue-green # name of codedeploy group
+  BACKEND_CODEDEPLOY_GROUP: api-blue-green  # name of codedeploy group
 
 permissions:
   contents: read
@@ -134,6 +137,8 @@ jobs:
         service: ${{ env.BACKEND_ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
+        codedeploy-application: ${{ env.CODEDEPLOY_APP }}
+        codedeploy-deployment-group: ${{ env.BACKEND_CODEDEPLOY_GROUP }}
 
     - name: Deploy Frontend Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -142,3 +147,5 @@ jobs:
         service: ${{ env.FRONTEND_ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
+        codedeploy-application: ${{ env.CODEDEPLOY_APP }}
+        codedeploy-deployment-group: ${{ env.FRONTEND_CODEDEPLOY_GROUP }}
