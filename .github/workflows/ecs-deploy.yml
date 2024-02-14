@@ -47,8 +47,8 @@ env:
   CODEDEPLOY_APP: woutfh                    # name of codedeploy app
   FRONTEND_CODEDEPLOY_GROUP: web-blue-green # name of codedeploy group
   BACKEND_CODEDEPLOY_GROUP: api-blue-green  # name of codedeploy group
-  FE_APPSPEC: .aws/fe-task-def.json         # path to your appspec file
-  BE_APPSPEC: .aws/be-task-def.json         # path to your appspec file
+  FE_APPSPEC: .aws/fe-appspec.json         # path to your appspec file
+  BE_APPSPEC: .aws/be-appspec.json         # path to your appspec file
 
 permissions:
   contents: read
