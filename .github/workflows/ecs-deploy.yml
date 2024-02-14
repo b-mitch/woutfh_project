@@ -47,6 +47,8 @@ env:
   CODEDEPLOY_APP: woutfh                    # name of codedeploy app
   FRONTEND_CODEDEPLOY_GROUP: web-blue-green # name of codedeploy group
   BACKEND_CODEDEPLOY_GROUP: api-blue-green  # name of codedeploy group
+  FE_APPSPEC: .aws/fe-task-def.json         # path to your appspec file
+  BE_APPSPEC: .aws/be-task-def.json         # path to your appspec file
 
 permissions:
   contents: read
@@ -137,6 +139,7 @@ jobs:
         service: ${{ env.BACKEND_ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
+        codedeploy-appspec: ${{ env.BE_APPSPEC }}
         codedeploy-application: ${{ env.CODEDEPLOY_APP }}
         codedeploy-deployment-group: ${{ env.BACKEND_CODEDEPLOY_GROUP }}
 
@@ -147,5 +150,6 @@ jobs:
         service: ${{ env.FRONTEND_ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
+        codedeploy-appspec: ${{ env.FE_APPSPEC }}
         codedeploy-application: ${{ env.CODEDEPLOY_APP }}
         codedeploy-deployment-group: ${{ env.FRONTEND_CODEDEPLOY_GROUP }}
