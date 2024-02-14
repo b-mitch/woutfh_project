@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://127.0.0.1:8000",
+  "proxy": "http://api-alb-1897774087.us-east-1.elb.amazonaws.com:8000",
   "dependencies": {
     "axios": "^1.5.0",
     "dotenv": "^16.3.1",
