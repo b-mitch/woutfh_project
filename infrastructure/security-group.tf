@@ -1,9 +1,9 @@
 # create security group for the application load balancer
 # terraform aws create security group
-resource "aws_security_group" "alb_security_group" {
-    name        = "alb-security-group"
+resource "aws_security_group" "webserver_alb_security_group" {
+    name        = "webserver-alb-security-group"
     description = "enable http/https access on port 80 and 443"
-    vpc_id      = aws_vpc.vpc.id
+    vpc_id      = aws_vpc.ecs_vpc.id
 
     ingress {
         description = "http access"
@@ -29,23 +29,64 @@ resource "aws_security_group" "alb_security_group" {
     }
 
     tags = {
-        Name = "alb-security-group"
+        Name = "webserver-alb-security-group"
     }
+}
+
+# create security group for the application load balancer
+# terraform aws create security group
+resource "aws_security_group" "api_alb_security_group" {
+    name        = "api-alb-security-group"
+    description = "enable access from webserver security group on port 8000"
+    vpc_id      = aws_vpc.ecs_vpc.id
+
+    ingress {
+        description = "webserver access"
+        from_port   = 8000
+        to_port     = 8000
+        protocol    = "tcp"
+        security_groups = [aws_security_group.webserver_alb_security_group.id]
+    }
+
+    egress {
+        from_port   = 0
+        to_port     = 0
+        protocol    = -1
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        Name = "api-alb-security-group"
+    }
+}
+
+# Add ingress rule to webserver alb security group allowing traffic from api alb security group
+# Terraform aws create security group rule
+resource "aws_security_group_rule" "webserver_alb_ingress_from_api" {
+    security_group_id = aws_security_group.webserver_alb_security_group.id
+
+    type       = "ingress"
+    description = "allow traffic from api alb security group"
+    from_port  = 8000
+    to_port    = 8000
+    protocol   = "tcp"
+    source_security_group_id = aws_security_group.api_alb_security_group.id
+
 }
 
 # create security group for the production web server in az1
 # terraform aws create security group
-resource "aws_security_group" "prod_webserver_security_group_az1" {
-    name        = "prod-webserver-security-group-az1"
-    description = "enable http/https access on ports 80/443 and access on port 22 via ssh"
-    vpc_id      = aws_vpc.vpc.id
+resource "aws_security_group" "webserver_security_group_az1" {
+    name        = "webserver-security-group-az1"
+    description = "enable http/https access on ports 80/443"
+    vpc_id      = aws_vpc.ecs_vpc.id
 
     ingress {
         description = "http access"
         from_port   = 80
         to_port     = 80
         protocol    = "tcp"
-        security_groups = [aws_security_group.alb_security_group.id]
+        security_groups = [aws_security_group.webserver_alb_security_group.id]
     }
 
     ingress {
@@ -53,15 +94,7 @@ resource "aws_security_group" "prod_webserver_security_group_az1" {
         from_port   = 443
         to_port     = 443
         protocol    = "tcp"
-        security_groups = [aws_security_group.alb_security_group.id]
-    }
-
-    ingress {
-        description = "SSH access"
-        from_port   = 22
-        to_port     = 22
-        protocol    = "tcp"
-        cidr_blocks = [var.ssh_location]
+        security_groups = [aws_security_group.webserver_alb_security_group.id]
     }
 
     egress {
@@ -72,23 +105,23 @@ resource "aws_security_group" "prod_webserver_security_group_az1" {
     }
 
     tags = {
-        Name = "prod-webserver-security-group-az1"
+        Name = "webserver-security-group-az1"
     }
 }
 
 # create security group for the production web server in az2
 # terraform aws create security group
-resource "aws_security_group" "prod_webserver_security_group_az2" {
-    name        = "prod-webserver-security-group-az2"
-    description = "enable http/https access on ports 80/443 and access on port 22 via ssh"
-    vpc_id      = aws_vpc.vpc.id
+resource "aws_security_group" "webserver_security_group_az2" {
+    name        = "webserver-security-group-az2"
+    description = "enable http/https access on ports 80/443"
+    vpc_id      = aws_vpc.ecs_vpc.id
 
     ingress {
         description = "http access"
         from_port   = 80
         to_port     = 80
         protocol    = "tcp"
-        security_groups = [aws_security_group.alb_security_group.id]
+        security_groups = [aws_security_group.webserver_alb_security_group.id]
     }
 
     ingress {
@@ -96,15 +129,7 @@ resource "aws_security_group" "prod_webserver_security_group_az2" {
         from_port   = 443
         to_port     = 443
         protocol    = "tcp"
-        security_groups = [aws_security_group.alb_security_group.id]
-    }
-
-    ingress {
-        description = "SSH access"
-        from_port   = 22
-        to_port     = 22
-        protocol    = "tcp"
-        cidr_blocks = [var.ssh_location]
+        security_groups = [aws_security_group.webserver_alb_security_group.id]
     }
 
     egress {
@@ -115,66 +140,23 @@ resource "aws_security_group" "prod_webserver_security_group_az2" {
     }
 
     tags = {
-        Name = "prod-webserver-security-group-az2"
-    }
-}
-
-# create security group for the development web server
-# terraform aws create security group
-resource "aws_security_group" "dev_webserver_security_group" {
-    name        = "dev-webserver-security-group"
-    description = "enable http/https access on ports 80/443 and access on port 22 via ssh"
-    vpc_id      = aws_vpc.vpc.id
-
-    ingress {
-        description = "http access"
-        from_port   = 80
-        to_port     = 80
-        protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    ingress {
-        description = "https access"
-        from_port   = 443
-        to_port     = 443
-        protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    ingress {
-        description = "SSH access"
-        from_port   = 22
-        to_port     = 22
-        protocol    = "tcp"
-        cidr_blocks = [var.ssh_location]
-    }
-
-    egress {
-        from_port   = 0
-        to_port     = 0
-        protocol    = -1
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    tags = {
-        Name = "dev-webserver-security-group"
+        Name = "webserver-security-group-az2"
     }
 }
 
 # create security group for the production database server
 # terraform aws create security group
-resource "aws_security_group" "prod_database_security_group" {
-    name        = "prod-database-security-group"
-    description = "enable access on port 5432 from production webserver sg"
-    vpc_id      = aws_vpc.vpc.id
+resource "aws_security_group" "database_security_group" {
+    name        = "database-security-group"
+    description = "enable access on port 5432 from webserver sg"
+    vpc_id      = aws_vpc.ecs_vpc.id
 
     ingress {
         description = "postgres access"
         from_port   = 5432
         to_port     = 5432
         protocol    = "tcp"
-        security_groups = [aws_security_group.prod_webserver_security_group_az1.id, aws_security_group.prod_webserver_security_group_az2.id]
+        security_groups = [aws_security_group.webserver_security_group_az1.id, aws_security_group.webserver_security_group_az2.id]
     }
 
     egress {
@@ -185,72 +167,32 @@ resource "aws_security_group" "prod_database_security_group" {
     }
 
     tags = {
-        Name = "prod-database-security-group"
-    }
-}
-
-# create security group for the development database server
-# terraform aws create security group
-resource "aws_security_group" "dev_database_security_group" {
-    name        = "dev-database-security-group"
-    description = "enable access on port 5432 from development webserver sg"
-    vpc_id      = aws_vpc.vpc.id
-
-    ingress {
-        description = "postgres access"
-        from_port   = 5432
-        to_port     = 5432
-        protocol    = "tcp"
-        security_groups = [aws_security_group.dev_webserver_security_group.id]
-    }
-
-    egress {
-        from_port   = 0
-        to_port     = 0
-        protocol    = -1
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    tags = {
-        Name = "dev-database-security-group"
+        Name = "database-security-group"
     }
 }
 
 # Add ingress rule to production webserver az1 security group allowing traffic from RDS security group
 # Terraform aws create security group rule
-resource "aws_security_group_rule" "prod_webserver_az1_ingress_from_db" {
-  security_group_id = aws_security_group.prod_webserver_security_group_az1.id
+resource "aws_security_group_rule" "webserver_az1_ingress_from_db" {
+  security_group_id = aws_security_group.webserver_security_group_az1.id
 
   type        = "ingress"
   description = "allow traffic from production RDS security group"
   from_port   = 5432 
   to_port     = 5432
   protocol    = "tcp"
-  source_security_group_id = aws_security_group.prod_database_security_group.id
+  source_security_group_id = aws_security_group.database_security_group.id
 }
 
 # Add ingress rule to production webserver az2 security group allowing traffic from RDS security group
 # Terraform aws create security group rule
-resource "aws_security_group_rule" "prod_webserver_az2_ingress_from_db" {
-  security_group_id = aws_security_group.prod_webserver_security_group_az2.id
+resource "aws_security_group_rule" "webserver_az2_ingress_from_db" {
+  security_group_id = aws_security_group.webserver_security_group_az2.id
 
   type        = "ingress"
   description = "allow traffic from production RDS security group"
   from_port   = 5432 
   to_port     = 5432
   protocol    = "tcp"
-  source_security_group_id = aws_security_group.prod_database_security_group.id
-}
-
-# Add ingress rule to development webserver security group allowing traffic from RDS security group
-# Terraform aws create security group rule
-resource "aws_security_group_rule" "dev_webserver_ingress_rule" {
-  security_group_id = aws_security_group.dev_webserver_security_group.id
-
-  type        = "ingress"
-  description = "allow traffic from development RDS security group"
-  from_port   = 5432 
-  to_port     = 5432
-  protocol    = "tcp"
-  source_security_group_id = aws_security_group.dev_database_security_group.id
+  source_security_group_id = aws_security_group.database_security_group.id
 }
