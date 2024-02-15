@@ -79,11 +79,13 @@ resource "aws_ecs_cluster" "WoutfhCluster" {
 
 # Create ECS Service for webserver
 resource "aws_ecs_service" "woutfh_webserver" {
-    name            = "woutfh-webserver"
-    cluster         = aws_ecs_cluster.WoutfhCluster.id
-    task_definition = aws_ecs_task_definition.woutfh-webserver-def.arn
-    launch_type     = "FARGATE"
-    desired_count   = 1
+    name                               = "woutfh-webserver"
+    enable_ecs_managed_tags            = true 
+    health_check_grace_period_seconds  = 2 
+    cluster                            = aws_ecs_cluster.WoutfhCluster.id
+    task_definition                    = aws_ecs_task_definition.woutfh-webserver-def.arn
+    launch_type                        = "FARGATE"
+    desired_count                      = 1
 
     deployment_controller {
         type = "CODE_DEPLOY"
@@ -104,11 +106,13 @@ resource "aws_ecs_service" "woutfh_webserver" {
 
 # Create ECS Service for API
 resource "aws_ecs_service" "woutfh_api" {
-    name            = "woutfh-api"
-    cluster         = aws_ecs_cluster.WoutfhCluster.id
-    task_definition = aws_ecs_task_definition.woutfh-api-def.arn
-    launch_type     = "FARGATE"
-    desired_count   = 1
+    name                               = "woutfh-api"
+    enable_ecs_managed_tags            = true 
+    health_check_grace_period_seconds  = 2 
+    cluster                            = aws_ecs_cluster.WoutfhCluster.id
+    task_definition                    = aws_ecs_task_definition.woutfh-api-def.arn
+    launch_type                        = "FARGATE"
+    desired_count                      = 1
 
     deployment_controller {
         type = "CODE_DEPLOY"
