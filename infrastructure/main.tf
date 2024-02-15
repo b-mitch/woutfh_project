@@ -6,7 +6,7 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "woutfh-terraform-remote-state"
+    bucket = "woutfh-prod-terraform-remote-state"
     key    = "terraform.tfstate.dev"
     region = "us-east-1"
     profile = "terraform-user"

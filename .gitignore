@@ -35,3 +35,8 @@ env-config.js
 .vscode/
 *.sublime-workspace
 *.sublime-project
+
+# Terraform
+*/.terraform/
+
+*/variable.tf
