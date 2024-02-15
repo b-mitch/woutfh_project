@@ -40,9 +40,9 @@ env:
   FE_ECS_TASK_DEFINITION: .aws/fe-task-def.json # path to your Amazon ECS task definition
   BE_ECS_TASK_DEFINITION: .aws/be-task-def.json # path to your Amazon ECS task definition
                                             # file, e.g. .aws/task-definition.json
-  FRONTEND_CONTAINER_NAME: webserver        # set this to the name of the frontend container in the
+  FRONTEND_CONTAINER_NAME: woutfh-webserver # set this to the name of the frontend container in the
                                             # containerDefinitions section of your task definition
-  BACKEND_CONTAINER_NAME: api               # set this to the name of the backend container in the
+  BACKEND_CONTAINER_NAME: woutfh-api        # set this to the name of the backend container in the
                                             # containerDefinitions section of your task definition
   CODEDEPLOY_APP: woutfh                    # name of codedeploy app
   FRONTEND_CODEDEPLOY_GROUP: webserver-deployment-group # name of codedeploy group
