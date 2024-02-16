@@ -22,17 +22,6 @@ resource "aws_lb_target_group" "web_blue" {
     protocol    = "HTTP"
     vpc_id      = aws_vpc.ecs_vpc.id
 
-    health_check {
-        healthy_threshold   = 2
-        interval            = 30
-        matcher             = "200,301,302"
-        path = "/"
-        port = "traffic-port"
-        protocol            = "HTTP"
-        timeout             = 5
-        unhealthy_threshold = 2
-    }
-
     tags = {
         Name = "web-blue"
     }
@@ -46,17 +35,6 @@ resource "aws_lb_target_group" "web_green" {
     protocol    = "HTTP"
     vpc_id      = aws_vpc.ecs_vpc.id
 
-    health_check {
-        healthy_threshold   = 2
-        interval            = 30
-        matcher             = "200,301,302"
-        path = "/"
-        port = "traffic-port"
-        protocol            = "HTTP"
-        timeout             = 5
-        unhealthy_threshold = 2
-    }
-
     tags = {
         Name = "web-green"
     }
@@ -66,7 +44,7 @@ resource "aws_lb_target_group" "web_green" {
 # terraform aws create listener
 resource "aws_lb_listener" "webserver_listener" {
     load_balancer_arn = aws_lb.webserver_alb.arn
-    port              = "80"
+    port              = 80
     protocol          = "HTTP"
 
     default_action {
@@ -79,7 +57,7 @@ resource "aws_lb_listener" "webserver_listener" {
 # terraform aws create application load balancer
 resource "aws_lb" "api_alb" {
     name               = "api-alb"
-    internal           = false
+    internal           = true
     load_balancer_type = "application"
     security_groups    = [aws_security_group.api_alb_security_group.id]
     subnets            = [aws_subnet.ecs_subnet_az1.id, aws_subnet.ecs_subnet_az2.id]
@@ -99,17 +77,6 @@ resource "aws_lb_target_group" "api_blue" {
     protocol    = "HTTP"
     vpc_id      = aws_vpc.ecs_vpc.id
 
-    health_check {
-        healthy_threshold   = 2
-        interval            = 30
-        matcher             = "200,301,302"
-        path                = "/"
-        port                = 8000
-        protocol            = "HTTP"
-        timeout             = 5
-        unhealthy_threshold = 2
-    }
-
     tags = {
         Name = "api-blue"
     }
@@ -124,17 +91,6 @@ resource "aws_lb_target_group" "api_green" {
     protocol    = "HTTP"
     vpc_id      = aws_vpc.ecs_vpc.id
 
-    health_check {
-        healthy_threshold   = 2
-        interval            = 30
-        matcher             = "200,301,302"
-        path                = "/"
-        port                = 8000
-        protocol            = "HTTP"
-        timeout             = 5
-        unhealthy_threshold = 2
-    }
-
     tags = {
         Name = "api-green"
     }
@@ -144,7 +100,7 @@ resource "aws_lb_target_group" "api_green" {
 # terraform aws create listener
 resource "aws_lb_listener" "api_listener" {
     load_balancer_arn = aws_lb.api_alb.arn
-    port              = "8000"
+    port              = 8000
     protocol          = "HTTP"
 
     default_action {

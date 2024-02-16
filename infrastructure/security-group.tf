@@ -41,11 +41,11 @@ resource "aws_security_group" "api_alb_security_group" {
     vpc_id      = aws_vpc.ecs_vpc.id
 
     ingress {
-        description = "webserver access"
+        description = "access from within VPC"
         from_port   = 8000
         to_port     = 8000
         protocol    = "tcp"
-        security_groups = [aws_security_group.webserver_alb_security_group.id]
+        cidr_blocks = ["192.168.0.0/24"]
     }
 
     egress {
@@ -117,7 +117,7 @@ resource "aws_security_group" "webserver_security_group_az2" {
     vpc_id      = aws_vpc.ecs_vpc.id
 
     ingress {
-        description = "http access"
+        description = "http access via alb"
         from_port   = 80
         to_port     = 80
         protocol    = "tcp"
@@ -125,7 +125,7 @@ resource "aws_security_group" "webserver_security_group_az2" {
     }
 
     ingress {
-        description = "https access"
+        description = "https access via alb"
         from_port   = 443
         to_port     = 443
         protocol    = "tcp"
@@ -152,7 +152,7 @@ resource "aws_security_group" "api_security_group_az1" {
     vpc_id      = aws_vpc.ecs_vpc.id
 
     ingress {
-        description = "webserver access"
+        description = "webserver access via alb"
         from_port   = 8000
         to_port     = 8000
         protocol    = "tcp"
@@ -175,7 +175,7 @@ resource "aws_security_group" "api_security_group_az2" {
     vpc_id      = aws_vpc.ecs_vpc.id
 
     ingress {
-        description = "webserver access"
+        description = "webserver access via alb"
         from_port   = 8000
         to_port     = 8000
         protocol    = "tcp"
