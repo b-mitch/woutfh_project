@@ -70,31 +70,16 @@ resource "aws_lb_listener" "webserver_listener" {
     protocol          = "HTTP"
 
     default_action {
-      type             = "forward"
-      forward {
-        target_group {
-          arn    = aws_lb_target_group.web_blue.arn
-          weight = 100
-        }
-
-        target_group {
-          arn    = aws_lb_target_group.web_green.arn
-          weight = 0
-        }
-
-        stickiness {
-          enabled  = false
-          duration = 1
-        }
-      }
-    }
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.web_blue.arn
+  }
 }
 
 # create api application load balancer
 # terraform aws create application load balancer
 resource "aws_lb" "api_alb" {
     name               = "api-alb"
-    internal           = false
+    internal           = true
     load_balancer_type = "application"
     security_groups    = [aws_security_group.api_alb_security_group.id]
     subnets            = [aws_subnet.ecs_subnet_az1.id, aws_subnet.ecs_subnet_az2.id]
@@ -118,8 +103,8 @@ resource "aws_lb_target_group" "api_blue" {
         healthy_threshold   = 2
         interval            = 30
         matcher             = "200,301,302"
-        path = "/"
-        port = "traffic-port"
+        path                = "/"
+        port                = 8000
         protocol            = "HTTP"
         timeout             = 5
         unhealthy_threshold = 2
@@ -143,8 +128,8 @@ resource "aws_lb_target_group" "api_green" {
         healthy_threshold   = 2
         interval            = 30
         matcher             = "200,301,302"
-        path = "/"
-        port = "traffic-port"
+        path                = "/"
+        port                = 8000
         protocol            = "HTTP"
         timeout             = 5
         unhealthy_threshold = 2
@@ -163,22 +148,7 @@ resource "aws_lb_listener" "api_listener" {
     protocol          = "HTTP"
 
     default_action {
-      type             = "forward"
-      forward {
-        target_group {
-          arn    = aws_lb_target_group.api_blue.arn
-          weight = 100
-        }
-
-        target_group {
-          arn    = aws_lb_target_group.api_green.arn
-          weight = 0
-        }
-
-        stickiness {
-          enabled  = false
-          duration = 1
-        }
-      }
-    }
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.api_blue.arn
+  }
 }
