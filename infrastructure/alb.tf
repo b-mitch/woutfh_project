@@ -79,7 +79,7 @@ resource "aws_lb_listener" "webserver_listener" {
 # terraform aws create application load balancer
 resource "aws_lb" "api_alb" {
     name               = "api-alb"
-    internal           = true
+    internal           = false
     load_balancer_type = "application"
     security_groups    = [aws_security_group.api_alb_security_group.id]
     subnets            = [aws_subnet.ecs_subnet_az1.id, aws_subnet.ecs_subnet_az2.id]
