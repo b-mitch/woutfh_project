@@ -44,7 +44,7 @@ env:
                                             # containerDefinitions section of your task definition
   BACKEND_CONTAINER_NAME: woutfh-api        # set this to the name of the backend container in the
                                             # containerDefinitions section of your task definition
-  CODEDEPLOY_APP: woutfh                    # name of codedeploy app
+  CODEDEPLOY_APP: Woutfh                    # name of codedeploy app
   FRONTEND_CODEDEPLOY_GROUP: webserver-deployment-group # name of codedeploy group
   BACKEND_CODEDEPLOY_GROUP: api-deployment-group        # name of codedeploy group
   FE_APPSPEC: .aws/fe-appspec.json         # path to your appspec file
