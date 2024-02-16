@@ -1,74 +1,84 @@
 # Define ECS Task Definition
-resource "aws_ecs_task_definition" "woutfh-webserver-def" {
+resource "aws_ecs_task_definition" "woutfh_webserver_def" {
     family                   = "woutfh-webserver-def"
-    container_definitions   = jsonencode([
-    {
-        name            = "woutfh-webserver"
-        image           = "048374329844.dkr.ecr.us-east-1.amazonaws.com/woutfh-frontend:7164717"
-        portMappings    = [
+    task_role_arn            = "arn:aws:iam::048374329844:role/ecsTaskExecutionRole"
+    execution_role_arn       = "arn:aws:iam::048374329844:role/ecsTaskExecutionRole"
+    network_mode             = "awsvpc"
+    cpu                      = "1024"
+    memory                   = "3072"
+    requires_compatibilities = ["FARGATE"]
+
+    container_definitions = jsonencode([
         {
-            containerPort = 80
-            hostPort      = 80
-            protocol      = "tcp"
-        }
-        ]
-        essential         = true
-        logConfiguration = {
-            logDriver = "awslogs"
-            options = {
-                "awslogs-group" = "woutfh-webserver-logs"
-                "awslogs-region" = "us-east-1"
-                "awslogs-stream-prefix" = "woutfh-webserver"
+            name      = "woutfh-webserver"
+            image     = "048374329844.dkr.ecr.us-east-1.amazonaws.com/woutfh-frontend:7164717"
+            cpu       = 0
+            essential = true
+            portMappings = [
+                {
+                    name          = "webserver-8000"
+                    containerPort = 80
+                    hostPort      = 80
+                    protocol      = "tcp"
+                    appProtocol   = "http"
+                }
+            ]
+            logConfiguration = {
+                logDriver = "awslogs"
+                options = {
+                    "awslogs-create-group"    = "true"
+                    "awslogs-group"           = "/ecs/woutfh-webserver-def"
+                    "awslogs-region"          = "us-east-1"
+                    "awslogs-stream-prefix"   = "ecs"
+                }
             }
         }
-    }
     ])
-    task_role_arn = "arn:aws:iam::048374329844:role/ecsTaskExecutionRole"
-    execution_role_arn = "arn:aws:iam::048374329844:role/ecsTaskExecutionRole"
-    network_mode = "awsvpc"
-    requires_compatibilities = ["FARGATE"]
-    cpu = 256
-    memory = 512
     runtime_platform {
-        operating_system_family = "LINUX"
-        cpu_architecture        = "X86_64"
+        cpu_architecture         = "X86_64"
+        operating_system_family  = "LINUX"
     }
 }
 
 # Define ECS Task Definition
-resource "aws_ecs_task_definition" "woutfh-api-def" {
+resource "aws_ecs_task_definition" "woutfh_api_def" {
     family                   = "woutfh-api-def"
-    container_definitions   = jsonencode([
-    {
-        name            = "woutfh-api"
-        image           = "048374329844.dkr.ecr.us-east-1.amazonaws.com/woutfh-backend:7164717"
-        portMappings    = [
+    task_role_arn            = "arn:aws:iam::048374329844:role/ecsTaskExecutionRole"
+    execution_role_arn       = "arn:aws:iam::048374329844:role/ecsTaskExecutionRole"
+    network_mode             = "awsvpc"
+    cpu                      = "1024"
+    memory                   = "3072"
+    requires_compatibilities = ["FARGATE"]
+
+    container_definitions = jsonencode([
         {
-            containerPort = 8000
-            hostPort      = 8000
-            protocol      = "tcp"
-        }
-        ]
-        essential         = true
-        logConfiguration = {
-            logDriver = "awslogs"
-            options = {
-                "awslogs-group" = "woutfh-api-logs"
-                "awslogs-region" = "us-east-1"
-                "awslogs-stream-prefix" = "woutfh-api"
+            name      = "woutfh-api"
+            image     = "048374329844.dkr.ecr.us-east-1.amazonaws.com/woutfh-backend:7164717"
+            cpu       = 0
+            essential = true
+            portMappings = [
+                {
+                    name          = "api-8000"
+                    containerPort = 8000
+                    hostPort      = 8000
+                    protocol      = "tcp"
+                    appProtocol   = "http"
+                }
+            ]
+            logConfiguration = {
+                logDriver = "awslogs"
+                options = {
+                    "awslogs-create-group"    = "true"
+                    "awslogs-group"           = "/ecs/woutfh-api-def"
+                    "awslogs-region"          = "us-east-1"
+                    "awslogs-stream-prefix"   = "ecs"
+                }
             }
         }
-    }
     ])
-    task_role_arn = "arn:aws:iam::048374329844:role/ecsTaskExecutionRole"
-    execution_role_arn = "arn:aws:iam::048374329844:role/ecsTaskExecutionRole"
-    network_mode = "awsvpc"
-    requires_compatibilities = ["FARGATE"]
-    cpu = 256
-    memory = 512
     runtime_platform {
-        operating_system_family = "LINUX"
-        cpu_architecture        = "X86_64"
+        cpu_architecture         = "X86_64"
+        operating_system_family  = "LINUX"
     }
 }
 
@@ -83,7 +93,7 @@ resource "aws_ecs_service" "woutfh_webserver" {
     enable_ecs_managed_tags            = true 
     health_check_grace_period_seconds  = 2 
     cluster                            = aws_ecs_cluster.WoutfhCluster.id
-    task_definition                    = aws_ecs_task_definition.woutfh-webserver-def.arn
+    task_definition                    = aws_ecs_task_definition.woutfh_webserver_def.arn
     launch_type                        = "FARGATE"
     desired_count                      = 1
 
@@ -101,7 +111,7 @@ resource "aws_ecs_service" "woutfh_webserver" {
         subnets = [aws_subnet.ecs_subnet_az1.id, aws_subnet.ecs_subnet_az2.id]
         security_groups = [aws_security_group.webserver_alb_security_group.id]
     }
-    depends_on = [aws_ecs_task_definition.woutfh-webserver-def]
+    depends_on = [aws_ecs_task_definition.woutfh_webserver_def]
 }
 
 # Create ECS Service for API
@@ -110,7 +120,7 @@ resource "aws_ecs_service" "woutfh_api" {
     enable_ecs_managed_tags            = true 
     health_check_grace_period_seconds  = 2 
     cluster                            = aws_ecs_cluster.WoutfhCluster.id
-    task_definition                    = aws_ecs_task_definition.woutfh-api-def.arn
+    task_definition                    = aws_ecs_task_definition.woutfh_api_def.arn
     launch_type                        = "FARGATE"
     desired_count                      = 1
 
@@ -128,5 +138,5 @@ resource "aws_ecs_service" "woutfh_api" {
         subnets = [aws_subnet.ecs_subnet_az1.id, aws_subnet.ecs_subnet_az2.id]
         security_groups = [aws_security_group.api_alb_security_group.id]
     }
-    depends_on = [aws_ecs_task_definition.woutfh-api-def]
+    depends_on = [aws_ecs_task_definition.woutfh_api_def]
 }
