@@ -1,3 +1,15 @@
+# Define webserver log group
+resource "aws_cloudwatch_log_group" "woutfh_webserver_logs" {
+  name              = "/ecs/woutfh-webserver-def" 
+  retention_in_days = 7 
+}
+
+# Define api log group
+resource "aws_cloudwatch_log_group" "woutfh_api_logs" {
+  name              = "/ecs/woutfh-api-def" 
+  retention_in_days = 7 
+}
+
 # Define ECS Task Definition
 resource "aws_ecs_task_definition" "woutfh_webserver_def" {
     family                   = "woutfh-webserver-def"
@@ -16,7 +28,7 @@ resource "aws_ecs_task_definition" "woutfh_webserver_def" {
             essential = true
             portMappings = [
                 {
-                    name          = "webserver-8000"
+                    name          = "webserver-80"
                     containerPort = 80
                     hostPort      = 80
                     protocol      = "tcp"
